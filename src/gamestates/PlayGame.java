@@ -57,7 +57,7 @@ public class PlayGame extends State implements StateMethods {     // in here we 
     }
 
     @Override
-    public void mouseRemoved(MouseEvent e) {
+    public void mouseMoved(MouseEvent e) {
 
     }
 
@@ -76,7 +76,7 @@ public class PlayGame extends State implements StateMethods {     // in here we 
                 player.setAttacking(true);
                 break;
 
-            case KeyEvent.VK_SPACE:
+            case KeyEvent.VK_ENTER:
                 player.setJump(true);
                 break;
 
@@ -105,7 +105,7 @@ public class PlayGame extends State implements StateMethods {     // in here we 
                 // player.setAttacking(false);
                 break;
 
-            case KeyEvent.VK_SPACE:
+            case KeyEvent.VK_ENTER:
                 player.setJump(false);
                 break;
         }

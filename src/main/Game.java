@@ -16,7 +16,7 @@ public class Game implements Runnable
     private GamePanel gamePanel;
     private Thread gameLoop;
     private final int FPS_SET = 120;
-    private final int UPS_SET = 130;        // updates per second
+    private final int UPS_SET = 150;        // updates per second
 
     private PlayGame playGame;
     private Menu menu;
@@ -70,7 +70,10 @@ public class Game implements Runnable
                 menu.update();
                 break;
 
+            case OPTIONS:
+            case QUIT:
             default:
+                System.exit(0);
                 break;
         }
     }
