@@ -7,8 +7,8 @@ public class Constants {
     public static class UI {
 
         public static class Buttons {
-            public static final int BUTTON_WIDTH_DEFAULT = 150;
-            public static final int BUTTON_HEIGHT_DEFAULT = 40;
+            public static final int BUTTON_WIDTH_DEFAULT = 140;
+            public static final int BUTTON_HEIGHT_DEFAULT = 45;
             public static final int BUTTON_WIDTH = (int)(BUTTON_WIDTH_DEFAULT * Game.SCALE);
             public static final int BUTTON_HEIGHT = (int)(BUTTON_HEIGHT_DEFAULT * Game.SCALE);
         }

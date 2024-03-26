@@ -49,9 +49,9 @@ public class Player extends Entity {
 
     }
 
-    public void render(Graphics graphics) {
+    public void render(Graphics graphics, int levelOffset) {
 
-        graphics.drawImage(animations[playerAction][animIndex], (int)(hitbox.x - xDrawOffset), (int)(hitbox.y - yDrawOffset), width, height, null);
+        graphics.drawImage(animations[playerAction][animIndex], (int)(hitbox.x - xDrawOffset) - levelOffset, (int)(hitbox.y - yDrawOffset), width, height, null);
         // drawHitbox(graphics);
     }
 
@@ -109,8 +109,14 @@ public class Player extends Entity {
         }
 
         // if nothing is pressed, then we return, no business of being here
-        if (!left && !right && !isInAir) {
-            return;
+//        if (!left && !right && !isInAir) {
+//            return;
+//        }
+        if (!isInAir) {
+            if ((!left && !right) || (left && right))
+            {
+                return;
+            }
         }
 
         float xSpeed = 0;   // temp var to pass into canMoveHere method (the next position we wanna move to)

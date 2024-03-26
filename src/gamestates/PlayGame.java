@@ -3,6 +3,7 @@ package gamestates;
 import entities.Player;
 import levels.LevelManager;
 import main.Game;
+import utilz.LoadSave;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -11,6 +12,14 @@ import java.awt.event.MouseEvent;
 public class PlayGame extends State implements StateMethods {     // in here we have the playing scene that we're currently playing
     private Player player;
     private LevelManager levelManager;
+
+    private int xLevelOffset;
+    private int leftBorder = (int)(0.2 * Game.GAME_WIDTH); // 20% of the game width = left border (if player is at 18% we need to move level to the left)
+    private int rightBorder = (int)(0.8 * Game.GAME_WIDTH);
+    private int levelTilesWide = LoadSave.getLevelData()[0].length;
+    private int maxTilesOffset = levelTilesWide - Game.TILES_IN_WIDTH; // TILES_IN_WIDTH are the tiles we can see on screen
+    private int maxLevelOffset = maxTilesOffset * Game.TILES_SIZE;
+
 
     public PlayGame(Game game) {
         super(game);
@@ -29,12 +38,30 @@ public class PlayGame extends State implements StateMethods {     // in here we 
     public void update() {
         levelManager.update();
         player.update();
+        checkCloseToBorder();
+    }
+
+    private void checkCloseToBorder() {
+        int playerX = (int) player.getHitbox().x;
+        int difference = playerX - xLevelOffset;
+
+        if (difference > rightBorder) {
+            xLevelOffset += difference - rightBorder;
+        } else if (difference < leftBorder) {
+            xLevelOffset += difference - leftBorder;
+        }
+
+        if (xLevelOffset > maxLevelOffset) {
+            xLevelOffset = maxLevelOffset;
+        } else if (xLevelOffset < 0) {
+            xLevelOffset = 0;
+        }
     }
 
     @Override
     public void draw(Graphics g) {
-        levelManager.draw(g);
-        player.render(g);
+        levelManager.draw(g, xLevelOffset);
+        player.render(g, xLevelOffset);
 
     }
 

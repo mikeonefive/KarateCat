@@ -34,12 +34,12 @@ public class LevelManager {
         }
     }
 
-    public void draw(Graphics g) {
+    public void draw(Graphics g, int levelOffset) {
 
         for (int y = 0; y < Game.TILES_IN_HEIGHT; y++) {
-            for (int x = 0; x < Game.TILES_IN_WIDTH; x++) {
+            for (int x = 0; x < level1.getLevelData()[0].length; x++) {
                 int index = level1.getSpriteIndex(x, y);
-                g.drawImage(levelSprite[index], x * Game.TILES_SIZE, y * Game.TILES_SIZE,
+                g.drawImage(levelSprite[index], x * Game.TILES_SIZE - levelOffset, y * Game.TILES_SIZE,
                         Game.TILES_SIZE, Game.TILES_SIZE, null);
             }
             
