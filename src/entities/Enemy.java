@@ -1,11 +1,22 @@
 package entities;
 
+import main.Game;
+
 import static utilz.Constants.EnemyConstants.*;
+import static utilz.Constants.Directions.*;
 
 public abstract class Enemy extends Entity {
 
-    private int animationIndex, enemyState, enemyType;
-    private int animationTick, animationSpeed = 15;
+    protected int animationIndex, enemyState, enemyType;
+    protected int animationTick, animationSpeed = 15;
+
+    protected boolean firstUpdate = true;
+    protected boolean inAir = false;
+
+    protected float fallSpeed;
+    protected float gravity = 0.05f * Game.SCALE;
+    protected float walkSpeed = 0.35f * Game.SCALE;
+    protected int walkDir = LEFT;
 
     public Enemy(float x, float y, int width, int height, int enemyType) {
         super(x, y, width, height);
@@ -13,7 +24,7 @@ public abstract class Enemy extends Entity {
         initHitbox(x, y, width, height);
     }
 
-    private void updateAnimationTick() {
+    protected void updateAnimationTick() {
         animationTick++;
         if (animationTick >= animationSpeed) {
             animationTick = 0;
@@ -26,9 +37,15 @@ public abstract class Enemy extends Entity {
 
     }
 
-    public void update() {
-        updateAnimationTick();
+
+    protected void changeWalkingDir() {
+        if(walkDir == LEFT) {
+            walkDir = RIGHT;
+        } else {
+            walkDir = LEFT;
+        }
     }
+
 
     public int getAnimationIndex() {
         return animationIndex;

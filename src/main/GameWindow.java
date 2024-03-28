@@ -16,9 +16,9 @@ public class GameWindow
 
         jframe.setDefaultCloseOperation(jframe.EXIT_ON_CLOSE);
         jframe.add(gamePanel); // add gamePanel so we can draw sth and actually see it in the gameWindow
-        // jframe.setLocationRelativeTo(null); // center the window
         jframe.setResizable(false);
         jframe.pack(); // fit size of window to preferred size of its components
+        jframe.setLocationRelativeTo(null); // center the window
         jframe.setVisible(true);
         jframe.addWindowFocusListener(new WindowFocusListener() {
             @Override
