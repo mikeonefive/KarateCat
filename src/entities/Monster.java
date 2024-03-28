@@ -1,8 +1,9 @@
 package entities;
 
-import static utilz.Constants.Directions.LEFT;
+import main.Game;
+
 import static utilz.Constants.EnemyConstants.*;
-import static utilz.HelpMethods.*;
+
 
 public class Monster extends Enemy {
 
@@ -10,60 +11,44 @@ public class Monster extends Enemy {
 
         super(x, y, MONSTER_WIDTH, MONSTER_HEIGHT, MONSTER);
 
-        // (int)(16 * Game.SCALE), (int)(40 * Game.SCALE)
+        // the attack distance of this type of enemy is shorter than the standard
+        this.attackDistance = Game.TILES_SIZE / 3f;
+
+        // monster stays in its default size, otherwise it's too tall
         initHitbox(x, y, 16, 40);
 
     }
 
 
-    public void update(int[][] levelData) {
-        updateMoving(levelData);
+    public void update(int[][] levelData, Player player) {
+        updateMoving(levelData, player);
         updateAnimationTick();
 
     }
     
 
-    private void updateMoving(int[][] levelData) {
+    private void updateMoving(int[][] levelData, Player player) {
         if (firstUpdate) {
-            if (!isEntityOnFloor(hitbox, levelData)) {
-                inAir = true;
-            }
-            firstUpdate = false;
+            firstUpdateCheck(levelData);
         }
 
         if (inAir) {
-            if (canMoveHere(hitbox.x, hitbox.y + fallSpeed, hitbox.width, hitbox.height, levelData))
-            {
-                hitbox.y += fallSpeed;
-                fallSpeed += gravity;
-            }
-            else {
-                inAir = false;
-                hitbox.y = getEntityYPosUnderRoofOrAboveFloor(hitbox, fallSpeed);
-            }
+            updateInAir(levelData);
         } else {
             switch (enemyState) {
                 case IDLE:
-                    enemyState = WALK;
+                    changeToNewEnemyState(WALK);
                     break;
                 case WALK:
-                    float xSpeed;
 
-                    if (walkDir == LEFT) {
-                        xSpeed = -walkSpeed;
-                    } else {
-                        xSpeed = walkSpeed;
+                    if (canSeePlayer(levelData, player)) {
+                        turnTowardsPlayer(player);
+                    }
+                    if (isPlayerCloseForAttack(player)) {
+                        changeToNewEnemyState(ATTACK);
                     }
 
-                    if(canMoveHere(hitbox.x + xSpeed, hitbox.y, hitbox.width, hitbox.height, levelData)) {
-                        if(isFloor(hitbox, xSpeed, levelData)) {
-                            hitbox.x += xSpeed;
-                            return;
-                        }
-                    }
-
-                    changeWalkingDir();
-
+                    move(levelData);
                     break;
             }
         }

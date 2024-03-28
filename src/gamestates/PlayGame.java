@@ -59,7 +59,7 @@ public class PlayGame extends State implements StateMethods {     // in here we 
     public void update() {
         levelManager.update();
         player.update();
-        enemyManager.update(levelManager.getCurrentLevel().getLevelData());
+        enemyManager.update(levelManager.getCurrentLevel().getLevelData(), player);
         checkCloseToBorder();
     }
 

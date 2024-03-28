@@ -1,10 +1,8 @@
 package entities;
 
 import main.Game;
-
-import static utilz.Constants.Directions.LEFT;
 import static utilz.Constants.EnemyConstants.*;
-import static utilz.HelpMethods.*;
+
 
 public class Crabby extends Enemy {
 
@@ -23,45 +21,18 @@ public class Crabby extends Enemy {
 
     private void updateMoving(int[][] levelData) {
         if (firstUpdate) {
-            if (!isEntityOnFloor(hitbox, levelData)) {
-                inAir = true;
-            }
-            firstUpdate = false;
+            firstUpdateCheck(levelData);
         }
 
         if (inAir) {
-            if (canMoveHere(hitbox.x, hitbox.y + fallSpeed, hitbox.width, hitbox.height, levelData))
-            {
-                hitbox.y += fallSpeed;
-                fallSpeed += gravity;
-            }
-            else {
-                inAir = false;
-                hitbox.y = getEntityYPosUnderRoofOrAboveFloor(hitbox, fallSpeed);
-            }
+            updateInAir(levelData);
         } else {
             switch (enemyState) {
                 case IDLE:
-                    enemyState = WALK;
+                    changeToNewEnemyState(WALK);
                     break;
                 case WALK:
-                    float xSpeed;
-
-                    if (walkDir == LEFT) {
-                        xSpeed = -walkSpeed;
-                    } else {
-                        xSpeed = walkSpeed;
-                    }
-
-                    if(canMoveHere(hitbox.x + xSpeed, hitbox.y, hitbox.width, hitbox.height, levelData)) {
-                        if(isFloor(hitbox, xSpeed, levelData)) {
-                            hitbox.x += xSpeed;
-                            return;
-                        }
-                    }
-
-                    changeWalkingDir();
-
+                    move(levelData);
                     break;
             }
         }

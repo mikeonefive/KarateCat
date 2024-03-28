@@ -1,7 +1,6 @@
 package utilz;
 
 import main.Game;
-import org.w3c.dom.css.Rect;
 
 import java.awt.geom.Rectangle2D;
 
@@ -40,13 +39,20 @@ public class HelpMethods {
         float xIndex = x / Game.TILES_SIZE;
         float yIndex = y / Game.TILES_SIZE;
 
-        int value = levelData[(int)yIndex][(int)xIndex];
+        return isTileSolid((int)xIndex, (int)yIndex, levelData);
+
+    }
+
+    public static boolean isTileSolid(int xTile, int yTile, int[][] levelData) {
+
+        int value = levelData[yTile][xTile];
 
         // 48 and up is not a tile, also less than 0 ain't a tile and 11 is a transparent sprite, so not 11 means solid
         if (value >= 48 || value < 0 || value != 11) {
             return true;
         }
         return false;
+
     }
 
     public static float getEntityXPosNextToWall(Rectangle2D.Float hitbox, float xSpeed) {
@@ -77,8 +83,8 @@ public class HelpMethods {
 
         // check pixel below bottom left and bottom right (corners of our entity)
         // if both not solid -> we are in the air
-        if(isSolid(hitbox.x, hitbox.y + hitbox.height + 1, levelData)) {
-            if(isSolid(hitbox.x + hitbox.width, hitbox.y + hitbox.height + 1, levelData)) {
+        if (isSolid(hitbox.x, hitbox.y + hitbox.height + 1, levelData)) {
+            if (isSolid(hitbox.x + hitbox.width, hitbox.y + hitbox.height + 1, levelData)) {
                 return true;
             }
         }
@@ -88,5 +94,42 @@ public class HelpMethods {
 
     public static boolean isFloor(Rectangle2D.Float hitbox, float xSpeed, int[][] levelData) {
         return isSolid(hitbox.x + xSpeed, hitbox.y + hitbox.height + 1, levelData);
+    }
+
+    public static boolean areAllCurrentTilesWalkable(int xStart, int xEnd, int y, int[][] levelData)
+    {
+        for (int i = 0; i < xEnd - xStart; i++)
+        {
+            // check the difference between object1 and object2 xTile and if any of the tiles between them are solid
+            if (isTileSolid(xStart + i, y, levelData))
+            {
+                return false;
+            }
+            // check if tile underneath the current one is walkable, if it isn't then return false
+            if (!isTileSolid(xStart + i, y + 1, levelData))
+            {
+                return false;
+            }
+
+        }
+        return true;
+    }
+
+
+
+    public static boolean isSightClear(int[][] levelData, Rectangle2D.Float hitboxObject1,
+                                       Rectangle2D.Float hitboxObject2, int yTileCurrent)
+    {
+
+        int xTileObject1 = (int) (hitboxObject1.x / Game.TILES_SIZE);
+        int xTileObject2 = (int) (hitboxObject2.x / Game.TILES_SIZE);
+
+        // we have to check which tile is greater because in the loop we have to know which direction we wanna check
+        if (xTileObject1 > xTileObject2)
+        {
+            return areAllCurrentTilesWalkable(xTileObject2, xTileObject1, yTileCurrent, levelData);
+        } else {
+            return areAllCurrentTilesWalkable(xTileObject1, xTileObject2, yTileCurrent, levelData);
+        }
     }
 }
