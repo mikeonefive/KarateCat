@@ -111,7 +111,7 @@ public class PlayGame extends State implements StateMethods {     // in here we 
     @Override
     public void mouseClicked(MouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
-            player.setAttacking(true);
+            player.setAttacking(false, false, true, false);
         }
 
     }
@@ -143,7 +143,16 @@ public class PlayGame extends State implements StateMethods {     // in here we 
                 break;
 
             case KeyEvent.VK_K:
-                player.setAttacking(true);
+                player.setAttacking(true, false, false, false);
+                break;
+            case KeyEvent.VK_L:
+                player.setAttacking(false, true, false, false);
+                break;
+            case KeyEvent.VK_I:
+                player.setAttacking(false, false, true, false);
+                break;
+            case KeyEvent.VK_O:
+                player.setAttacking(false, false, false, true);
                 break;
 
             case KeyEvent.VK_ENTER:

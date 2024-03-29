@@ -1,6 +1,7 @@
 package entities;
 
 import gamestates.PlayGame;
+import main.Game;
 import utilz.LoadSave;
 import static utilz.Constants.EnemyConstants.*;
 
@@ -39,7 +40,7 @@ public class EnemyManager {
         }
 
         for (Crabby crab : crabbies)
-            crab.update(levelData);
+            crab.update(levelData, player);
     }
 
     public void draw(Graphics g, int xLevelOffset) {
@@ -52,9 +53,11 @@ public class EnemyManager {
         for (Monster monster : monsters) {
             // monster.drawHitbox(g, xLevelOffset);
             g.drawImage(monsterArray[monster.getEnemyState()][monster.getAnimationIndex()],
-                    (int)monster.getHitbox().x - xLevelOffset - MONSTER_DRAWOFFSET_X,
+                    (int)monster.getHitbox().x - xLevelOffset - MONSTER_DRAWOFFSET_X + monster.flipX(),
                     (int)monster.getHitbox().y - MONSTER_DRAWOFFSET_Y,
-                    MONSTER_DEFAULT_WIDTH, MONSTER_DEFAULT_HEIGHT, null);
+                    MONSTER_DEFAULT_WIDTH * monster.flipWidth(), MONSTER_DEFAULT_HEIGHT, null);
+
+            monster.drawAttackBox(g, xLevelOffset);
         }
     }
 

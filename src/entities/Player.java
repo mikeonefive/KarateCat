@@ -4,6 +4,7 @@ import main.Game;
 import utilz.LoadSave;
 
 import java.awt.*;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 
@@ -18,7 +19,7 @@ public class Player extends Entity {
     private int playerAction = IDLE;
 
     private boolean up, left, right, down, jump;
-    private boolean isMoving = false, isAttacking = false;
+    private boolean isMoving = false, isPunching = false, isKicking = false, isUppercutting = false, isSpinKicking = false;
     private float playerSpeed = 1.0f * Game.SCALE;
 
     private int[][] levelData;
@@ -34,14 +35,46 @@ public class Player extends Entity {
     private float fallSpeedAfterCollision = 0.5f * Game.SCALE;
     private boolean isInAir = false;
 
+    // status bars UI
+    private BufferedImage statusBarImg;
+    private int statusBarWidth = (int)(84 * Game.SCALE);
+    private int statusBarHeight = (int)(59 * Game.SCALE);
+    private int statusBarX = (int)(10 * Game.SCALE);
+    private int statusBarY = (int)(10 * Game.SCALE);
+
+    private int lifeBarWidth = (int)(62 * Game.SCALE);
+    private int lifeBarHeight = (int)(10 * Game.SCALE);
+    private int lifeBarXStart = (int)(16 * Game.SCALE);
+    private int lifeBarYStart = (int)(15 * Game.SCALE);
+
+    private int maxHealth = 100;
+    private int currentHealth = 40;
+    private int healthWidth = lifeBarWidth;
+
+    // attackBox, area that the player attacks and if there's an enemy there it gets a can of whoopass
+    private Rectangle2D.Float attackBox;
+
+    private int flipX = 0;
+    private int flipW = 1;
+
 
     public Player(float x, float y, int width, int height) {
         super(x, y, width, height);        // we take in x and y and pass them over to the Entity class where they are stored
+
         loadAnimations();
+
         initHitbox(x, y, (int)(12 * Game.SCALE), (int)(28 * Game.SCALE));
+
+        initAttackBox();
+    }
+
+    private void initAttackBox() {
+        attackBox = new Rectangle2D.Float(x, y, (int)(20 * Game.SCALE), (int)(20 * Game.SCALE));
     }
 
     public void update() {
+        updateHealthBar();
+        updateAttackBox();
 
         updatePosition();
         updateAnimationTick();
@@ -49,10 +82,49 @@ public class Player extends Entity {
 
     }
 
+    private void updateAttackBox() {
+
+        if (right) {          // Game.SCALE * 10 is the offset we need
+            attackBox.x = hitbox.x + hitbox.width + (int)(Game.SCALE * 10);
+        } else if (left) {
+            attackBox.x = hitbox.x - hitbox.width - (int)(Game.SCALE * 10);
+        }
+        attackBox.y = hitbox.y + Game.SCALE * 10;
+
+    }
+
+    private void updateHealthBar() {
+
+        healthWidth = (int)((currentHealth / (float)maxHealth) * lifeBarWidth);
+
+    }
+
     public void render(Graphics graphics, int levelOffset) {
 
-        graphics.drawImage(animations[playerAction][animIndex], (int)(hitbox.x - xDrawOffset) - levelOffset, (int)(hitbox.y - yDrawOffset), width, height, null);
+        graphics.drawImage(animations[playerAction][animIndex],
+                (int)(hitbox.x - xDrawOffset) - levelOffset + flipX,
+                (int)(hitbox.y - yDrawOffset),
+                width * flipW, height, null);   // flipW is -1 when we go to the left so we would flip the image in this case
         // drawHitbox(graphics, levelOffset);
+
+        drawAttackBox(graphics, levelOffset);
+
+        drawStatusBar(graphics);
+    }
+
+    private void drawAttackBox(Graphics graphics, int levelOffsetX) {
+        graphics.setColor(Color.red);
+        graphics.drawRect((int)attackBox.x - levelOffsetX, (int)attackBox.y, (int)attackBox.width, (int)attackBox.height);
+
+    }
+
+    private void drawStatusBar(Graphics graphics) {
+
+        graphics.setColor(Color.red);
+        graphics.fillRect(lifeBarXStart + statusBarX, lifeBarYStart + statusBarY, healthWidth, lifeBarHeight);
+
+        graphics.drawImage(statusBarImg, statusBarX, statusBarY, statusBarWidth, statusBarHeight, null);
+
     }
 
 
@@ -64,7 +136,10 @@ public class Player extends Entity {
             animIndex ++;
             if (animIndex >= getSpriteAmount(playerAction)) {
                 animIndex = 0;
-                isAttacking = false;
+                isPunching = false;
+                isKicking = false;
+                isUppercutting = false;
+                isSpinKicking = false;
             }
         }
     }
@@ -87,9 +162,19 @@ public class Player extends Entity {
 
         }
 
-        if (isAttacking) {
+        if (isPunching) {
             playerAction = PUNCH;
         }
+        if (isKicking) {
+            playerAction = ROUNDKICK;
+        }
+        if (isUppercutting) {
+            playerAction = UPPERCUT;
+        }
+        if (isSpinKicking) {
+            playerAction = SPINKICK;
+        }
+
         // if we changed the animation -> new animation so we reset animationTick so we start again
         if (startAnimation != playerAction) {
             resetAnimTick();
@@ -123,9 +208,13 @@ public class Player extends Entity {
 
         if (left) {
             xSpeed -= playerSpeed;
+            flipX = width;
+            flipW = -1;
         }
         if (right) {
             xSpeed += playerSpeed;
+            flipX = 0;
+            flipW = 1;
         }
 
         if(!isInAir) {  // we're just going left or right, not in air
@@ -187,6 +276,19 @@ public class Player extends Entity {
 
     }
 
+    public void updateHealth(int value) {
+        currentHealth += value;
+
+        if (currentHealth <= 0) {
+            currentHealth = 0;
+
+            // gameOver();
+
+        } else if (currentHealth >= maxHealth) {
+            currentHealth = maxHealth;
+        }
+    }
+
     private void loadAnimations() {     // image input is handled with utilz LoadSafe class
 
         BufferedImage img = LoadSave.getSpriteAtlas(LoadSave.PLAYER_ATLAS);
@@ -198,6 +300,8 @@ public class Player extends Entity {
                 animations[y][x] = img.getSubimage(x * 64, y * 64, 64, 64);
             }
         }
+
+        statusBarImg = LoadSave.getSpriteAtlas(LoadSave.STATUS_BAR);
     }
 
     public void loadLevelData(int [][] levelData) {
@@ -213,9 +317,14 @@ public class Player extends Entity {
         down = false;
     }
 
-    public void setAttacking(boolean isAttacking) {
-        this.isAttacking = isAttacking;
+    public void setAttacking(boolean isPunching, boolean isKicking, boolean isUppercutting, boolean isSpinKicking) {
+        this.isPunching = isPunching;
+        this.isKicking = isKicking;
+        this.isUppercutting = isUppercutting;
+        this.isSpinKicking = isSpinKicking;
     }
+
+
 
     public boolean isLeft() {
         return left;
