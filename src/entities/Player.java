@@ -1,5 +1,6 @@
 package entities;
 
+import gamestates.PlayGame;
 import main.Game;
 import utilz.LoadSave;
 
@@ -19,7 +20,10 @@ public class Player extends Entity {
     private int playerAction = IDLE;
 
     private boolean up, left, right, down, jump;
-    private boolean isMoving = false, isPunching = false, isKicking = false, isUppercutting = false, isSpinKicking = false;
+    private boolean isMoving = false;
+    private boolean isAttacking = false;
+    private int attackType = -1; // Default value indicating no attack
+
     private float playerSpeed = 1.0f * Game.SCALE;
 
     private int[][] levelData;
@@ -57,9 +61,13 @@ public class Player extends Entity {
     private int flipX = 0;
     private int flipW = 1;
 
+    private boolean checkedAttackAlready;
 
-    public Player(float x, float y, int width, int height) {
+    private PlayGame playGame;
+
+    public Player(float x, float y, int width, int height, PlayGame playGame) {
         super(x, y, width, height);        // we take in x and y and pass them over to the Entity class where they are stored
+        this.playGame = playGame;
 
         loadAnimations();
 
@@ -77,17 +85,30 @@ public class Player extends Entity {
         updateAttackBox();
 
         updatePosition();
+        if (isAttacking) {
+            checkAttack();
+        }
+
         updateAnimationTick();
         setAnimation();
 
     }
 
+    private void checkAttack() {
+        if (checkedAttackAlready || animIndex != 4) {
+            return;
+        }
+        checkedAttackAlready = true;
+        playGame.checkIfEnemyHitByPlayer(attackBox);
+        
+    }
+
     private void updateAttackBox() {
 
-        if (right) {          // Game.SCALE * 10 is the offset we need
-            attackBox.x = hitbox.x + hitbox.width + (int)(Game.SCALE * 10);
+        if (right) {          // Game.SCALE * 5 is the offset we need
+            attackBox.x = hitbox.x + hitbox.width + (int)(Game.SCALE * 5);
         } else if (left) {
-            attackBox.x = hitbox.x - hitbox.width - (int)(Game.SCALE * 10);
+            attackBox.x = hitbox.x - hitbox.width - (int)(Game.SCALE * 5);
         }
         attackBox.y = hitbox.y + Game.SCALE * 10;
 
@@ -136,10 +157,8 @@ public class Player extends Entity {
             animIndex ++;
             if (animIndex >= getSpriteAmount(playerAction)) {
                 animIndex = 0;
-                isPunching = false;
-                isKicking = false;
-                isUppercutting = false;
-                isSpinKicking = false;
+                isAttacking = false;
+                checkedAttackAlready = false;
             }
         }
     }
@@ -162,18 +181,48 @@ public class Player extends Entity {
 
         }
 
-        if (isPunching) {
-            playerAction = PUNCH;
+        if (isAttacking) {
+            switch(attackType) {
+                case PUNCH:
+                    playerAction = PUNCH;
+                    // start with the correct sprite, we check if the attack is new, not already inside of attack cycle
+                    if (startAnimation != PUNCH) {
+                        animIndex = 3;
+                        animTick = 0;
+                        return;
+                    }
+                    break;
+
+                case ROUNDKICK:
+                    playerAction = ROUNDKICK;
+                    if (startAnimation != ROUNDKICK) {
+                        animIndex = 3;
+                        animTick = 0;
+                        return;
+                    }
+                    break;
+
+                case UPPERCUT:
+                    playerAction = UPPERCUT;
+                    if (startAnimation != UPPERCUT) {
+                        animIndex = 3;
+                        animTick = 0;
+                        return;
+                    }
+                    break;
+
+                case SPINKICK:
+                    playerAction = SPINKICK;
+                    if (startAnimation != SPINKICK) {
+                        animIndex = 3;
+                        animTick = 0;
+                        return;
+                    }
+                    break;
+            }
+
         }
-        if (isKicking) {
-            playerAction = ROUNDKICK;
-        }
-        if (isUppercutting) {
-            playerAction = UPPERCUT;
-        }
-        if (isSpinKicking) {
-            playerAction = SPINKICK;
-        }
+
 
         // if we changed the animation -> new animation so we reset animationTick so we start again
         if (startAnimation != playerAction) {
@@ -317,11 +366,10 @@ public class Player extends Entity {
         down = false;
     }
 
-    public void setAttacking(boolean isPunching, boolean isKicking, boolean isUppercutting, boolean isSpinKicking) {
-        this.isPunching = isPunching;
-        this.isKicking = isKicking;
-        this.isUppercutting = isUppercutting;
-        this.isSpinKicking = isSpinKicking;
+    public void setAttacking(boolean isAttacking, int attackType) {
+        this.isAttacking = isAttacking;
+        this.attackType = attackType;
+
     }
 
 

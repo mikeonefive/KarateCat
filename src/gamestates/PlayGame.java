@@ -9,10 +9,12 @@ import utilz.LoadSave;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.Random;
 
 import static utilz.Constants.BackgroundEnvironment.*;
+import static utilz.Constants.PlayerConstants.*;
 
 public class PlayGame extends State implements StateMethods {     // in here we have the playing scene that we're currently playing
     private Player player;
@@ -50,7 +52,7 @@ public class PlayGame extends State implements StateMethods {     // in here we 
         levelManager = new LevelManager(game);
         enemyManager = new EnemyManager(this);
 
-        player = new Player(200, 200, (int) (64 * Game.SCALE), (int) (64 * Game.SCALE));
+        player = new Player(200, 200, (int) (64 * Game.SCALE), (int) (64 * Game.SCALE), this);
         player.loadLevelData(levelManager.getCurrentLevel().getLevelData());
 
     }
@@ -108,10 +110,18 @@ public class PlayGame extends State implements StateMethods {     // in here we 
 
     }
 
+    public void resetAll() {
+        
+    }
+
+    public void checkIfEnemyHitByPlayer(Rectangle2D.Float attackBoxPlayer) {
+        enemyManager.checkIfEnemyWasHit(attackBoxPlayer);
+    }
+
     @Override
     public void mouseClicked(MouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
-            player.setAttacking(false, false, true, false);
+            player.setAttacking(true, SPINKICK);
         }
 
     }
@@ -143,16 +153,16 @@ public class PlayGame extends State implements StateMethods {     // in here we 
                 break;
 
             case KeyEvent.VK_K:
-                player.setAttacking(true, false, false, false);
+                player.setAttacking(true, PUNCH);
                 break;
             case KeyEvent.VK_L:
-                player.setAttacking(false, true, false, false);
+                player.setAttacking(true, UPPERCUT);
                 break;
             case KeyEvent.VK_I:
-                player.setAttacking(false, false, true, false);
+                player.setAttacking(true, SPINKICK);
                 break;
             case KeyEvent.VK_O:
-                player.setAttacking(false, false, false, true);
+                player.setAttacking(true, ROUNDKICK);
                 break;
 
             case KeyEvent.VK_ENTER:

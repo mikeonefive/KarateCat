@@ -18,8 +18,8 @@ public class Constants {
         public static final int IDLE = 0;
         public static final int WALK = 1;
         public static final int ATTACK = 2;
-        public static final int DIE = 3;
-        public static final int HIT = 4; // for crabby
+        public static final int DEAD = 3;
+        public static final int WASHIT = 4;
 
 
         public static final int CRABBY = 1;
@@ -42,8 +42,10 @@ public class Constants {
                         case ATTACK:
                         case WALK:
                             return 4;
-                        case DIE:
+                        case DEAD:
                             return 7;
+                        case WASHIT:
+                            return 3;
                     }
                 case CRABBY:
                     switch (enemyState) {
@@ -53,15 +55,34 @@ public class Constants {
                             return 6;
                         case ATTACK:
                             return 7;
-                        case HIT:
+                        case WASHIT:
                             return 4;
-                        case DIE:
+                        case DEAD:
                             return 5;
                     }
             }
             return 0;
 
         }
+
+        public static int getMaxHealth(int enemyType) {
+            switch (enemyType) {
+                case MONSTER:
+                    return 10;
+                default:
+                    return 1;
+            }
+        }
+
+        public static int getDamageInflictedByEnemy(int enemyType) {
+            switch (enemyType) {
+                case MONSTER:
+                    return 15;
+                default:
+                    return 0;
+            }
+        }
+
     }
 
     public static class BackgroundEnvironment {
@@ -100,7 +121,7 @@ public class Constants {
         public static final int WALK = 1;
         public static final int JUMP = 2;
         public static final int SPINKICK = 3;
-        public static final int DIE = 4;
+        public static final int DEAD = 4;
         public static final int GETTINGHIT = 5;
         public static final int FALL = 6;
         public static final int PUNCH = 9;
@@ -110,7 +131,7 @@ public class Constants {
 
         public static int getSpriteAmount(int playerAction) {
             switch (playerAction) {
-                case DIE:
+                case DEAD:
                     return 7;
 
                 case WALK:

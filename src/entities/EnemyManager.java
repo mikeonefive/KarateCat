@@ -1,11 +1,11 @@
 package entities;
 
 import gamestates.PlayGame;
-import main.Game;
 import utilz.LoadSave;
 import static utilz.Constants.EnemyConstants.*;
 
 import java.awt.*;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
@@ -36,11 +36,17 @@ public class EnemyManager {
 
     public void update(int[][] levelData, Player player) {
         for (Monster monster : monsters) {
-            monster.update(levelData, player);
+            if (monster.isAlive()) {
+                monster.update(levelData, player);
+            }
         }
 
-        for (Crabby crab : crabbies)
-            crab.update(levelData, player);
+        for (Crabby crab : crabbies) {
+            if (crab.isAlive()) {
+                crab.update(levelData, player);
+            }
+        }
+
     }
 
     public void draw(Graphics g, int xLevelOffset) {
@@ -51,25 +57,42 @@ public class EnemyManager {
     private void drawMonsters(Graphics g, int xLevelOffset) {
 
         for (Monster monster : monsters) {
-            // monster.drawHitbox(g, xLevelOffset);
-            g.drawImage(monsterArray[monster.getEnemyState()][monster.getAnimationIndex()],
-                    (int)monster.getHitbox().x - xLevelOffset - MONSTER_DRAWOFFSET_X + monster.flipX(),
-                    (int)monster.getHitbox().y - MONSTER_DRAWOFFSET_Y,
-                    MONSTER_DEFAULT_WIDTH * monster.flipWidth(), MONSTER_DEFAULT_HEIGHT, null);
+            if (monster.isAlive()) {
 
-            monster.drawAttackBox(g, xLevelOffset);
+                // monster.drawHitbox(g, xLevelOffset);
+                g.drawImage(monsterArray[monster.getEnemyState()][monster.getAnimationIndex()],
+                        (int) monster.getHitbox().x - xLevelOffset - MONSTER_DRAWOFFSET_X + monster.flipX(),
+                        (int) monster.getHitbox().y - MONSTER_DRAWOFFSET_Y,
+                        MONSTER_DEFAULT_WIDTH * monster.flipWidth(), MONSTER_DEFAULT_HEIGHT, null);
+
+                monster.drawAttackBox(g, xLevelOffset);
+            }
         }
     }
 
     private void drawCrabs(Graphics g, int xLevelOffset) {
         for (Crabby c : crabbies) {
-            g.drawImage(crabbyArray[c.getEnemyState()][c.getAnimationIndex()],
-                    (int) c.getHitbox().x - xLevelOffset - CRABBY_DRAWOFFSET_X,
-                    (int) c.getHitbox().y - CRABBY_DRAWOFFSET_Y,
-                    CRABBY_WIDTH, CRABBY_HEIGHT, null);
-			// c.drawHitbox(g, xLvlOffset);
+            if (c.isAlive()) {
+                g.drawImage(crabbyArray[c.getEnemyState()][c.getAnimationIndex()],
+                        (int) c.getHitbox().x - xLevelOffset - CRABBY_DRAWOFFSET_X,
+                        (int) c.getHitbox().y - CRABBY_DRAWOFFSET_Y,
+                        CRABBY_WIDTH, CRABBY_HEIGHT, null);
+                // c.drawHitbox(g, xLvlOffset);
+            }
         }
 
+    }
+
+    public void checkIfEnemyWasHit(Rectangle2D.Float attackBox) {
+        for (Monster monster : monsters) {
+            if (monster.isAlive()) {
+
+                if (attackBox.intersects(monster.getHitbox())) {
+                    monster.receiveDamage(10);
+                    return;
+                }
+            }
+        }
     }
 
     private void loadEnemyImages() {

@@ -2,6 +2,8 @@ package entities;
 
 import main.Game;
 
+import java.awt.geom.Rectangle2D;
+
 import static utilz.Constants.EnemyConstants.*;
 import static utilz.Constants.Directions.*;
 import static utilz.HelpMethods.*;
@@ -24,11 +26,18 @@ public abstract class Enemy extends Entity {
 
     protected float attackDistance = Game.TILES_SIZE;
 
+    protected int maxHealth;
+    protected int currentHealth;
+    protected boolean isActive = true;
+    protected boolean checkedAttackAlready;
+
 
     public Enemy(float x, float y, int width, int height, int enemyType) {
         super(x, y, width, height);
         this.enemyType = enemyType;
         initHitbox(x, y, width, height);
+        maxHealth = getMaxHealth(enemyType);
+        currentHealth = maxHealth;
     }
 
     protected void firstUpdateCheck(int[][] levelData) {
@@ -117,6 +126,22 @@ public abstract class Enemy extends Entity {
         animationIndex = 0;
     }
 
+    public void receiveDamage(int amount) {
+        currentHealth -= amount;
+        if (currentHealth <= 0) {
+            changeToNewEnemyState(DEAD);
+        } else {
+            changeToNewEnemyState(WASHIT);
+        }
+    }
+
+    protected void checkIfPlayerWasHit(Rectangle2D.Float attackBox, Player player) {
+        if (attackBox.intersects(player.hitbox)) {
+            player.updateHealth(-getDamageInflictedByEnemy(enemyType));
+        }
+        checkedAttackAlready = true;
+    }
+
 
     protected void updateAnimationTick() {
         animationTick++;
@@ -127,8 +152,11 @@ public abstract class Enemy extends Entity {
             if (animationIndex >= getSpriteAmount(enemyType, enemyState)) {
                 animationIndex = 0;
 
-                if (enemyState == ATTACK) {     // enemy only attacks once goes to idle and then loop (can see player etc.) starts all over
-                    enemyState = IDLE;
+
+                switch(enemyState) {
+                    // enemy only attacks once goes to idle and then loop (can see player etc.) starts all over
+                    case ATTACK, WASHIT -> enemyState = IDLE;
+                    case DEAD -> isActive = false;
                 }
             }
         }
@@ -152,6 +180,11 @@ public abstract class Enemy extends Entity {
 
     public int getEnemyState() {
         return enemyState;
+    }
+
+
+    public boolean isAlive() {
+        return isActive;
     }
 
 }
