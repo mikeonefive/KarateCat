@@ -23,7 +23,10 @@ public class LoadSave {
 
     public static final String MENU_BUTTON_ATLAS = "button_atlas.png";
     public static final String MENU_BOARD = "menu_board.png";
-    public static final String MENU_BACKGROUND = "menu_bg.png";
+    public static final String MENU_BACKGROUND = "menu_background.png";
+
+    public static final String PAUSE_BACKGROUND = "pause_background.png";
+    public static final String SOUND_BUTTONS = "sound_buttons.png";
 
     public static final String PLAYGAME_BACKGROUND = "playgame_bg.png";
     public static final String BIG_CLOUDS = "big_clouds.png";

@@ -116,4 +116,14 @@ public class EnemyManager {
                 crabbyArray[j][i] = tempCrabImg.getSubimage(i * CRABBY_WIDTH_DEFAULT, j * CRABBY_HEIGHT_DEFAULT, CRABBY_WIDTH_DEFAULT, CRABBY_HEIGHT_DEFAULT);
     }
 
+    public void resetAllEnemies() {
+        for (Monster monster : monsters) {
+            monster.resetEnemy();
+        }
+
+        for (Crabby c : crabbies) {
+            c.resetEnemy();
+        }
+    }
+
 }

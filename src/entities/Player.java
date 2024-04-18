@@ -52,7 +52,7 @@ public class Player extends Entity {
     private int lifeBarYStart = (int)(15 * Game.SCALE);
 
     private int maxHealth = 100;
-    private int currentHealth = 40;
+    private int currentHealth = maxHealth;
     private int healthWidth = lifeBarWidth;
 
     // attackBox, area that the player attacks and if there's an enemy there it gets a can of whoopass
@@ -81,7 +81,15 @@ public class Player extends Entity {
     }
 
     public void update() {
+
         updateHealthBar();
+
+        // check if player dead?
+        if (currentHealth <= 0) {
+           playGame.setGameOver(true);
+           return;
+        }
+
         updateAttackBox();
 
         updatePosition();
@@ -183,42 +191,31 @@ public class Player extends Entity {
 
         if (isAttacking) {
             switch(attackType) {
+
                 case PUNCH:
                     playerAction = PUNCH;
-                    // start with the correct sprite, we check if the attack is new, not already inside of attack cycle
-                    if (startAnimation != PUNCH) {
-                        animIndex = 3;
-                        animTick = 0;
-                        return;
-                    }
                     break;
 
                 case ROUNDKICK:
                     playerAction = ROUNDKICK;
-                    if (startAnimation != ROUNDKICK) {
-                        animIndex = 3;
-                        animTick = 0;
-                        return;
-                    }
                     break;
 
                 case UPPERCUT:
                     playerAction = UPPERCUT;
-                    if (startAnimation != UPPERCUT) {
-                        animIndex = 3;
-                        animTick = 0;
-                        return;
-                    }
                     break;
 
                 case SPINKICK:
                     playerAction = SPINKICK;
-                    if (startAnimation != SPINKICK) {
-                        animIndex = 3;
-                        animTick = 0;
-                        return;
-                    }
                     break;
+            }
+
+            // Check if the attack animation is new, not already inside the attack cycle
+            // then we start with frame 3 -> faster attack (first frames are idle),
+            // if we wanna change it for a certain attack type (like frame 4 or sth), we have to do so in the cases above
+            if (startAnimation != playerAction) {
+                animIndex = 3;
+                animTick = 0;
+                return;
             }
 
         }
@@ -411,4 +408,20 @@ public class Player extends Entity {
 
     }
 
+    public void resetAll() {
+        resetDirBooleans();
+        isInAir = false;
+        isAttacking = false;
+        isMoving = false;
+        playerAction = IDLE;
+        currentHealth = maxHealth;
+
+        // player starting position at current level
+        hitbox.x = x;
+        hitbox.y = y;
+
+        if (!isEntityOnFloor(hitbox, levelData)) {
+            isInAir = true;
+        }
+    }
 }

@@ -4,6 +4,8 @@ import entities.EnemyManager;
 import entities.Player;
 import levels.LevelManager;
 import main.Game;
+import ui.GameOverScreen;
+import ui.PauseOverlay;
 import utilz.LoadSave;
 
 import java.awt.*;
@@ -33,6 +35,12 @@ public class PlayGame extends State implements StateMethods {     // in here we 
     private int[] smallCloudPosition;
     private Random random = new Random();
 
+    private GameOverScreen gameOverScreen;
+    private boolean isGameOver;
+
+    private PauseOverlay pauseOverlay;
+    private boolean isGamePaused = true;
+
     public PlayGame(Game game) {
         super(game);
         initClasses();
@@ -55,14 +63,23 @@ public class PlayGame extends State implements StateMethods {     // in here we 
         player = new Player(200, 200, (int) (64 * Game.SCALE), (int) (64 * Game.SCALE), this);
         player.loadLevelData(levelManager.getCurrentLevel().getLevelData());
 
+        gameOverScreen = new GameOverScreen(this);
+
+        pauseOverlay = new PauseOverlay();
     }
 
     @Override
     public void update() {
-        levelManager.update();
-        player.update();
-        enemyManager.update(levelManager.getCurrentLevel().getLevelData(), player);
-        checkCloseToBorder();
+
+        if (!isGameOver) {
+
+            levelManager.update();
+            player.update();
+            enemyManager.update(levelManager.getCurrentLevel().getLevelData(), player);
+            checkCloseToBorder();
+
+            pauseOverlay.update();
+        }
     }
 
     private void checkCloseToBorder() {
@@ -95,6 +112,12 @@ public class PlayGame extends State implements StateMethods {     // in here we 
 
         enemyManager.draw(g, xLevelOffset);
 
+        if (isGameOver) {
+            gameOverScreen.draw(g);
+        }
+
+        pauseOverlay.draw(g);
+
     }
 
     private void drawClouds(Graphics g) {
@@ -111,7 +134,15 @@ public class PlayGame extends State implements StateMethods {     // in here we 
     }
 
     public void resetAll() {
+
+        isGameOver = false;
+        player.resetAll();
+        enemyManager.resetAllEnemies();
         
+    }
+
+    public void setGameOver(boolean isGameOver) {
+        this.isGameOver = isGameOver;
     }
 
     public void checkIfEnemyHitByPlayer(Rectangle2D.Float attackBoxPlayer) {
@@ -120,59 +151,76 @@ public class PlayGame extends State implements StateMethods {     // in here we 
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        if (e.getButton() == MouseEvent.BUTTON1) {
-            player.setAttacking(true, SPINKICK);
+
+        if (!isGameOver) {
+
+            if (e.getButton() == MouseEvent.BUTTON1) {
+                player.setAttacking(true, SPINKICK);
+            }
         }
 
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-
+        if (isGamePaused) {
+            pauseOverlay.mousePressed(e);
+        }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-
+        if (isGamePaused) {
+            pauseOverlay.mouseReleased(e);
+        }
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
+        if (isGamePaused) {
+            pauseOverlay.mouseMoved(e);
+        }
 
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
-        switch (e.getKeyCode())
-        {
-            case KeyEvent.VK_A:
-                player.setLeft(true);
-                break;
-            case KeyEvent.VK_D:
-                player.setRight(true);
-                break;
 
-            case KeyEvent.VK_K:
-                player.setAttacking(true, PUNCH);
-                break;
-            case KeyEvent.VK_L:
-                player.setAttacking(true, UPPERCUT);
-                break;
-            case KeyEvent.VK_I:
-                player.setAttacking(true, SPINKICK);
-                break;
-            case KeyEvent.VK_O:
-                player.setAttacking(true, ROUNDKICK);
-                break;
+        if (isGameOver) {
+            gameOverScreen.keyPressed(e);
+        } else {
 
-            case KeyEvent.VK_ENTER:
-                player.setJump(true);
-                break;
+            switch (e.getKeyCode()) {
+                case KeyEvent.VK_A:
+                    player.setLeft(true);
+                    break;
+                case KeyEvent.VK_D:
+                    player.setRight(true);
+                    break;
 
-            case KeyEvent.VK_BACK_SPACE:
-                GameState.state = GameState.MENU;
-                break;
+                case KeyEvent.VK_K:
+                    player.setAttacking(true, PUNCH);
+                    break;
+                case KeyEvent.VK_L:
+                    player.setAttacking(true, UPPERCUT);
+                    break;
+                case KeyEvent.VK_I:
+                    player.setAttacking(true, ROUNDKICK);
+                    break;
+                case KeyEvent.VK_O:
+                    player.setAttacking(true, SPINKICK);
+                    break;
 
+
+                case KeyEvent.VK_ENTER:
+                    player.setJump(true);
+                    break;
+
+                case KeyEvent.VK_BACK_SPACE:
+                    GameState.state = GameState.MENU;
+                    break;
+
+            }
         }
 
     }
@@ -180,25 +228,28 @@ public class PlayGame extends State implements StateMethods {     // in here we 
     @Override
     public void keyReleased(KeyEvent e) {
 
-        switch (e.getKeyCode()) {
+        if (!isGameOver) {
 
-            case KeyEvent.VK_A:
-                player.setLeft(false);
-                break;
-            case KeyEvent.VK_D:
-                player.setRight(false);
-                break;
+            switch (e.getKeyCode()) {
+
+                case KeyEvent.VK_A:
+                    player.setLeft(false);
+                    break;
+                case KeyEvent.VK_D:
+                    player.setRight(false);
+                    break;
 
 
-            case KeyEvent.VK_K:
-                // player.setAttacking(false);
-                break;
+                case KeyEvent.VK_K:
+                    // player.setAttacking(false);
+                    break;
 
-            case KeyEvent.VK_ENTER:
-                player.setJump(false);
-                break;
+                case KeyEvent.VK_ENTER:
+                    player.setJump(false);
+                    break;
+            }
+
         }
-
     }
 
     public void windowFocusLost() {

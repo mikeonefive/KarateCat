@@ -21,7 +21,7 @@ public class Monster extends Enemy {
         super(x, y, MONSTER_WIDTH, MONSTER_HEIGHT, MONSTER);
 
         // the attack distance of this type of enemy is shorter than the standard
-        this.attackDistance = Game.TILES_SIZE / 1.5f;
+        this.attackDistance = Game.TILES_SIZE / 1.8f;
 
         // monster stays in its default size, otherwise it's too tall
         initHitbox(x, y, 16, 40);
@@ -44,8 +44,9 @@ public class Monster extends Enemy {
     }
 
     private void updateAttackBox() {
-        attackBox.x = hitbox.x - attackBoxOffsetX;
+        attackBox.x = hitbox.x;
 
+        // this is for this specific monster because it's in its default size
         if (walkDir == LEFT) {
             attackBox.x = hitbox.x - 24;
         }
@@ -78,9 +79,9 @@ public class Monster extends Enemy {
 
                     if (canSeePlayer(levelData, player)) {
                         turnTowardsPlayer(player);
-                    }
-                    if (isPlayerCloseForAttack(player)) {
-                        changeToNewEnemyState(ATTACK);
+                        if (isPlayerCloseForAttack(player)) {
+                            changeToNewEnemyState(ATTACK);
+                        }
                     }
 
                     move(levelData);
