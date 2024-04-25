@@ -36,7 +36,7 @@ public class GamePanel extends JPanel
 
         Dimension size = new Dimension(GAME_WIDTH, GAME_HEIGHT);
         setPreferredSize(size);
-        System.out.printf("%s x %s\n", GAME_WIDTH, GAME_HEIGHT);
+        // System.out.printf("%s x %s\n", GAME_WIDTH, GAME_HEIGHT);
     }
 
 

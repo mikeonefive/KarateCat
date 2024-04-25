@@ -28,10 +28,10 @@ public class EnemyManager {
 
     private void addEnemies() {
         monsters = LoadSave.getMonsters();
-        System.out.println("that many monsters in game: " + monsters.size());
+        // System.out.println("that many monsters in game: " + monsters.size());
 
         crabbies = LoadSave.getCrabs();
-        System.out.println("that many crabs in game: " + crabbies.size());
+        // System.out.println("that many crabs in game: " + crabbies.size());
     }
 
     public void update(int[][] levelData, Player player) {
@@ -65,7 +65,7 @@ public class EnemyManager {
                         (int) monster.getHitbox().y - MONSTER_DRAWOFFSET_Y,
                         MONSTER_DEFAULT_WIDTH * monster.flipWidth(), MONSTER_DEFAULT_HEIGHT, null);
 
-                monster.drawAttackBox(g, xLevelOffset);
+                // monster.drawAttackBox(g, xLevelOffset);
             }
         }
     }

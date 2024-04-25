@@ -114,10 +114,21 @@ public class Constants {
 //            public static final int SOUND_HEIGHT = (int)(SOUND_HEIGHT_DEFAULT * Game.SCALE);
         }
 
-        public static class URMButtons {
-            public static final int URM_DEFAULT_SIZE = 56;
-            public static final int URM_SIZE = (int) (URM_DEFAULT_SIZE * Game.SCALE);
+        public static class RSMButtons {
+            public static final int RSM_DEFAULT_WIDTH = 135;
+            public static final int RSM_DEFAULT_HEIGHT = 26;
+            // public static final int RSM_WIDTH = (int) (RSM_DEFAULT_WIDTH * Game.SCALE);
+            // public static final int RSM_HEIGHT = (int) (RSM_DEFAULT_HEIGHT * Game.SCALE);
+        }
 
+        public static class VolumeButtons {
+            public static final int VOLUME_DEFAULT_WIDTH = 19;
+            public static final int VOLUME_DEFAULT_HEIGHT = 31;
+            public static final int SLIDER_DEFAULT_WIDTH = 152;
+
+            // public static final int VOLUME_WIDTH = (int)(VOLUME_DEFAULT_WIDTH * Game.SCALE);
+            // public static final int VOLUME_HEIGHT = (int)(VOLUME_DEFAULT_HEIGHT * Game.SCALE);
+            // public static final int SLIDER_WIDTH = (int)(SLIDER_DEFAULT_WIDTH * Game.SCALE);
         }
     }
 

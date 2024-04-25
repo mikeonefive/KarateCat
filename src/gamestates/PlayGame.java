@@ -39,7 +39,7 @@ public class PlayGame extends State implements StateMethods {     // in here we 
     private boolean isGameOver;
 
     private PauseOverlay pauseOverlay;
-    private boolean isGamePaused = true;
+    private boolean isGamePaused = false;
 
     public PlayGame(Game game) {
         super(game);
@@ -65,20 +65,19 @@ public class PlayGame extends State implements StateMethods {     // in here we 
 
         gameOverScreen = new GameOverScreen(this);
 
-        pauseOverlay = new PauseOverlay();
+        pauseOverlay = new PauseOverlay(this);
     }
 
     @Override
     public void update() {
 
-        if (!isGameOver) {
-
+        if (isGamePaused) {
+            pauseOverlay.update();
+        } else if (!isGameOver) {
             levelManager.update();
             player.update();
             enemyManager.update(levelManager.getCurrentLevel().getLevelData(), player);
             checkCloseToBorder();
-
-            pauseOverlay.update();
         }
     }
 
@@ -103,7 +102,6 @@ public class PlayGame extends State implements StateMethods {     // in here we 
     public void draw(Graphics g) {
 
         g.drawImage(backgroundImg, 0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT, null);
-
         drawClouds(g);
 
         levelManager.draw(g, xLevelOffset);
@@ -112,18 +110,21 @@ public class PlayGame extends State implements StateMethods {     // in here we 
 
         enemyManager.draw(g, xLevelOffset);
 
+
+        if (isGamePaused) {
+            pauseOverlay.draw(g);
+        }
+
         if (isGameOver) {
             gameOverScreen.draw(g);
         }
-
-        pauseOverlay.draw(g);
 
     }
 
     private void drawClouds(Graphics g) {
 
         for (int i = 0; i < 3; i++) {       // the xLevelOffset calculation here makes sure the clouds move at different speeds
-            g.drawImage(bigCloudImg, i * BIG_CLOUD_WIDTH - (int)(xLevelOffset * 0.3) , (int) (204 * Game.SCALE), BIG_CLOUD_WIDTH, BIG_CLOUD_HEIGHT, null);
+            g.drawImage(bigCloudImg, i * BIG_CLOUD_WIDTH - (int)(xLevelOffset * 0.3) , (int) (219 * Game.SCALE), BIG_CLOUD_WIDTH, BIG_CLOUD_HEIGHT, null);
         }
 
         for (int i = 0; i < smallCloudPosition.length; i++) {
@@ -152,12 +153,17 @@ public class PlayGame extends State implements StateMethods {     // in here we 
     @Override
     public void mouseClicked(MouseEvent e) {
 
-        if (!isGameOver) {
+//        if (!isGameOver) {
+//            if (e.getButton() == MouseEvent.BUTTON1) {
+//                player.setAttacking(true, SPINKICK);
+//            }
+//        }
 
-            if (e.getButton() == MouseEvent.BUTTON1) {
-                player.setAttacking(true, SPINKICK);
-            }
-        }
+    }
+
+    public void mouseDragged(MouseEvent e) {
+        if (isGamePaused)
+            pauseOverlay.mouseDragged(e);
 
     }
 
@@ -220,6 +226,9 @@ public class PlayGame extends State implements StateMethods {     // in here we 
                     GameState.state = GameState.MENU;
                     break;
 
+                case KeyEvent.VK_ESCAPE:
+                    isGamePaused = !isGamePaused;
+                    break;
             }
         }
 
@@ -250,6 +259,10 @@ public class PlayGame extends State implements StateMethods {     // in here we 
             }
 
         }
+    }
+
+    public void resumeGame() {
+        isGamePaused = false;
     }
 
     public void windowFocusLost() {

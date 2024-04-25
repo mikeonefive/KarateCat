@@ -27,6 +27,8 @@ public class LoadSave {
 
     public static final String PAUSE_BACKGROUND = "pause_background.png";
     public static final String SOUND_BUTTONS = "sound_buttons.png";
+    public static final String RSM_BUTTONS = "rsm_buttons.png";
+    public static final String VOLUME_BUTTONS = "volume_buttons.png";
 
     public static final String PLAYGAME_BACKGROUND = "playgame_bg.png";
     public static final String BIG_CLOUDS = "big_clouds.png";
