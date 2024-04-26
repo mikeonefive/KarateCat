@@ -148,7 +148,8 @@ public class PauseOverlay {
             }
         } else if (isIn(e, playAgainButton)) {
             if (playAgainButton.isMousePressed()) {
-                System.out.println("START OVER!");
+                isPlaying.resetAll();
+                isPlaying.resumeGame();
             }
         } else if (isIn(e, resumeButton)) {
             if (resumeButton.isMousePressed()) {
