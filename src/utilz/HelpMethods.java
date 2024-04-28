@@ -1,8 +1,16 @@
 package utilz;
 
+import entities.Crabby;
+import entities.Monster;
 import main.Game;
 
+import java.awt.*;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+
+import static utilz.Constants.EnemyConstants.CRABBY;
+import static utilz.Constants.EnemyConstants.MONSTER;
 
 public class HelpMethods {
 
@@ -135,5 +143,68 @@ public class HelpMethods {
         } else {
             return areAllCurrentTilesWalkable(xTileObject1, xTileObject2, yTileCurrent, levelData);
         }
+    }
+
+    public static int[][] getLevelData(BufferedImage image) {
+
+        int[][] levelData = new int[image.getHeight()][image.getWidth()];
+
+        for (int y = 0; y < image.getHeight(); y++) {
+            for (int x = 0; x < image.getWidth(); x++) {
+
+                Color color = new Color(image.getRGB(x, y));
+                int value = color.getRed();     // get red value on that position
+                if (value >= 48) {
+                    value = 0;
+                }
+                levelData[y][x] = value;
+            }
+        }
+        return levelData;
+    }
+
+    public static ArrayList<Monster> getMonsters(BufferedImage img) {
+
+        ArrayList<Monster> monsterList = new ArrayList<>();
+
+        for (int y = 0; y < img.getHeight(); y++) {
+            for (int x = 0; x < img.getWidth(); x++) {
+
+                Color color = new Color(img.getRGB(x, y));
+                int value = color.getGreen();     // get green value on that position, if it's 0 meaning SKULL then we add a new one to the list
+                if (value == MONSTER) {
+                    monsterList.add(new Monster(x * Game.TILES_SIZE, y * Game.TILES_SIZE));
+                }
+
+            }
+        }
+        return monsterList;
+
+    }
+
+
+    public static ArrayList<Crabby> getCrabs(BufferedImage img) {
+
+        ArrayList<Crabby> list = new ArrayList<>();
+        for (int j = 0; j < img.getHeight(); j++)
+            for (int i = 0; i < img.getWidth(); i++) {
+                Color color = new Color(img.getRGB(i, j));
+                int value = color.getBlue();
+                if (value == CRABBY)
+                    list.add(new Crabby(i * Game.TILES_SIZE, j * Game.TILES_SIZE));
+            }
+        return list;
+    }
+
+    public static Point getPlayerSpawnPosition(BufferedImage img) {
+        for (int y = 0; y < img.getHeight(); y++)
+            for (int x = 0; x < img.getWidth(); x++) {
+                Color color = new Color(img.getRGB(x, y));
+                int value = color.getGreen();
+                if (value == 100)
+                    return new Point(x * Game.TILES_SIZE, y * Game.TILES_SIZE);
+            }
+
+        return new Point(Game.TILES_SIZE, Game.TILES_SIZE);
     }
 }

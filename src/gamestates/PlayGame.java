@@ -5,6 +5,7 @@ import entities.Player;
 import levels.LevelManager;
 import main.Game;
 import ui.GameOverScreen;
+import ui.LevelCompleteOverlay;
 import ui.PauseOverlay;
 import utilz.LoadSave;
 
@@ -26,9 +27,7 @@ public class PlayGame extends State implements StateMethods {     // in here we 
     private int xLevelOffset;
     private int leftBorder = (int)(0.2 * Game.GAME_WIDTH); // 20% of the game width = left border (if player is at 18% we need to move level to the left)
     private int rightBorder = (int)(0.8 * Game.GAME_WIDTH);
-    private int levelTilesWide = LoadSave.getLevelData()[0].length;
-    private int maxTilesOffset = levelTilesWide - Game.TILES_IN_WIDTH; // TILES_IN_WIDTH are the tiles we can see on screen
-    private int maxLevelOffset = maxTilesOffset * Game.TILES_SIZE;
+    private int maxLevelOffsetX;
 
 
     private BufferedImage backgroundImg, bigCloudImg, smallCloudImg;
@@ -40,6 +39,10 @@ public class PlayGame extends State implements StateMethods {     // in here we 
 
     private PauseOverlay pauseOverlay;
     private boolean isGamePaused = false;
+
+    private LevelCompleteOverlay levelCompleteOverlay;
+    private boolean isLevelComplete = false;
+
 
     public PlayGame(Game game) {
         super(game);
@@ -53,6 +56,23 @@ public class PlayGame extends State implements StateMethods {     // in here we 
             smallCloudPosition[i] = (int)(70 * Game.SCALE) + random.nextInt((int)(150 * Game.SCALE));
 
         }
+        calculateLevelOffset();
+        loadStartLevel();
+    }
+
+    public void loadNextLevel() {
+        resetAll();
+        levelManager.loadNextLevel();
+        player.setSpawnPosition(levelManager.getCurrentLevel().getPlayerSpawnCoordinates());
+    }
+
+    private void loadStartLevel() {
+        enemyManager.loadEnemies(levelManager.getCurrentLevel());
+    }
+
+    private void calculateLevelOffset() {
+
+        maxLevelOffsetX = levelManager.getCurrentLevel().getLvlOffset();
     }
 
 
@@ -61,11 +81,15 @@ public class PlayGame extends State implements StateMethods {     // in here we 
         enemyManager = new EnemyManager(this);
 
         player = new Player(200, 200, (int) (64 * Game.SCALE), (int) (64 * Game.SCALE), this);
-        player.loadLevelData(levelManager.getCurrentLevel().getLevelData());
+        player.loadLevelData(levelManager.getCurrentLevel().getLvlData());
+
+        player.setSpawnPosition(levelManager.getCurrentLevel().getPlayerSpawnCoordinates());
 
         gameOverScreen = new GameOverScreen(this);
 
         pauseOverlay = new PauseOverlay(this);
+
+        levelCompleteOverlay = new LevelCompleteOverlay(this);
     }
 
     @Override
@@ -73,10 +97,14 @@ public class PlayGame extends State implements StateMethods {     // in here we 
 
         if (isGamePaused) {
             pauseOverlay.update();
+
+        } else if (isLevelComplete) {
+            levelCompleteOverlay.update();
+
         } else if (!isGameOver) {
             levelManager.update();
             player.update();
-            enemyManager.update(levelManager.getCurrentLevel().getLevelData(), player);
+            enemyManager.update(levelManager.getCurrentLevel().getLvlData(), player);
             checkCloseToBorder();
         }
     }
@@ -91,8 +119,8 @@ public class PlayGame extends State implements StateMethods {     // in here we 
             xLevelOffset += difference - leftBorder;
         }
 
-        if (xLevelOffset > maxLevelOffset) {
-            xLevelOffset = maxLevelOffset;
+        if (xLevelOffset > maxLevelOffsetX) {
+            xLevelOffset = maxLevelOffsetX;
         } else if (xLevelOffset < 0) {
             xLevelOffset = 0;
         }
@@ -119,6 +147,9 @@ public class PlayGame extends State implements StateMethods {     // in here we 
             gameOverScreen.draw(g);
         }
 
+        if (isLevelComplete)
+            levelCompleteOverlay.draw(g);
+
     }
 
     private void drawClouds(Graphics g) {
@@ -137,6 +168,8 @@ public class PlayGame extends State implements StateMethods {     // in here we 
     public void resetAll() {
 
         isGameOver = false;
+        isGamePaused = false;
+        isLevelComplete = false;
         player.resetAll();
         enemyManager.resetAllEnemies();
         
@@ -162,31 +195,57 @@ public class PlayGame extends State implements StateMethods {     // in here we 
     }
 
     public void mouseDragged(MouseEvent e) {
-        if (isGamePaused)
-            pauseOverlay.mouseDragged(e);
-
+        if (!isGameOver) {
+            if (isGamePaused)
+                pauseOverlay.mouseDragged(e);
+        }
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if (isGamePaused) {
-            pauseOverlay.mousePressed(e);
+        if (!isGameOver) {
+            if (isGamePaused) {
+                pauseOverlay.mousePressed(e);
+            }
+            if (isLevelComplete) {
+                levelCompleteOverlay.mousePressed(e);
+            }
         }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        if (isGamePaused) {
-            pauseOverlay.mouseReleased(e);
+        if (!isGameOver) {
+            if (isGamePaused) {
+                pauseOverlay.mouseReleased(e);
+            }
+
+            if (isLevelComplete) {
+                levelCompleteOverlay.mouseReleased(e);
+            }
         }
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        if (isGamePaused) {
-            pauseOverlay.mouseMoved(e);
+        if (!isGameOver) {
+            if (isGamePaused) {
+                pauseOverlay.mouseMoved(e);
+            }
+
+            if (isLevelComplete) {
+                levelCompleteOverlay.mouseMoved(e);
+            }
         }
 
+    }
+
+    public void setLevelComplete(boolean isLevelComplete) {
+        this.isLevelComplete = isLevelComplete;
+    }
+
+    public void setMaxLevelOffset(int levelOffset) {
+        this.maxLevelOffsetX = levelOffset;
     }
 
     @Override
@@ -272,5 +331,9 @@ public class PlayGame extends State implements StateMethods {     // in here we 
     // getter
     public Player getPlayer() {
         return player;
+    }
+
+    public EnemyManager getEnemyManager() {
+        return enemyManager;
     }
 }

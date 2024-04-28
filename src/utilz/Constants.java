@@ -117,8 +117,8 @@ public class Constants {
         public static class RSMButtons {
             public static final int RSM_DEFAULT_WIDTH = 135;
             public static final int RSM_DEFAULT_HEIGHT = 26;
-            // public static final int RSM_WIDTH = (int) (RSM_DEFAULT_WIDTH * Game.SCALE);
-            // public static final int RSM_HEIGHT = (int) (RSM_DEFAULT_HEIGHT * Game.SCALE);
+            public static final int RSM_WIDTH = (int) (RSM_DEFAULT_WIDTH * Game.SCALE);
+            public static final int RSM_HEIGHT = (int) (RSM_DEFAULT_HEIGHT * Game.SCALE);
         }
 
         public static class VolumeButtons {

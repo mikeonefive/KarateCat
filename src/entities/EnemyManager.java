@@ -1,6 +1,7 @@
 package entities;
 
 import gamestates.PlayGame;
+import levels.Level;
 import utilz.LoadSave;
 import static utilz.Constants.EnemyConstants.*;
 
@@ -23,29 +24,37 @@ public class EnemyManager {
     public EnemyManager(PlayGame playGame) {
         this.playGame = playGame;
         loadEnemyImages();
-        addEnemies();
+
     }
 
-    private void addEnemies() {
-        monsters = LoadSave.getMonsters();
+    public void loadEnemies(Level level) {
+        monsters = level.getMonstaz();
         // System.out.println("that many monsters in game: " + monsters.size());
 
-        crabbies = LoadSave.getCrabs();
+        // crabbies = level.getCrabs();
         // System.out.println("that many crabs in game: " + crabbies.size());
     }
 
     public void update(int[][] levelData, Player player) {
+
+        boolean isAnyEnemyActive = false;
+
         for (Monster monster : monsters) {
             if (monster.isAlive()) {
                 monster.update(levelData, player);
+                isAnyEnemyActive = true;
             }
         }
 
         for (Crabby crab : crabbies) {
             if (crab.isAlive()) {
                 crab.update(levelData, player);
+                isAnyEnemyActive = true;
             }
         }
+
+        if (!isAnyEnemyActive)
+            playGame.setLevelComplete(true);
 
     }
 

@@ -7,8 +7,11 @@ import main.Game;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 
 import static utilz.Constants.EnemyConstants.CRABBY;
@@ -18,12 +21,12 @@ public class LoadSave {
 
     public static final String PLAYER_ATLAS = "player_sprites.png";
     public static final String LEVEL_ATLAS = "outside_sprites.png";
-    // public static final String LEVEL_ONE_DATA = "level_one_data.png";
-    public static final String LEVEL_ONE_DATA = "level_one_data_long.png";
 
     public static final String MENU_BUTTON_ATLAS = "button_atlas.png";
     public static final String MENU_BOARD = "menu_board.png";
     public static final String MENU_BACKGROUND = "menu_background.png";
+
+    public static final String LEVEL_COMPLETE_IMG = "level_completed_sprite.png";
 
     public static final String PAUSE_BACKGROUND = "pause_background.png";
     public static final String SOUND_BUTTONS = "sound_buttons.png";
@@ -60,58 +63,47 @@ public class LoadSave {
     return img;
     }
 
-    public static ArrayList<Monster> getMonsters() {
-        BufferedImage img = getSpriteAtlas(LEVEL_ONE_DATA);
-        ArrayList<Monster> monsterList = new ArrayList<>();
 
-        for (int y = 0; y < img.getHeight(); y++) {
-            for (int x = 0; x < img.getWidth(); x++) {
+    public static BufferedImage[] getAllLevels() {
+        URL url = LoadSave.class.getResource("/levelfiles");
+        File file;
 
-                Color color = new Color(img.getRGB(x, y));
-                int value = color.getGreen();     // get green value on that position, if it's 0 meaning SKULL then we add a new one to the list
-                if (value == MONSTER) {
-                    monsterList.add(new Monster(x * Game.TILES_SIZE, y * Game.TILES_SIZE));
+        // url = location, URI = actual resource the folder
+        try {
+            file = new File(url.toURI());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+
+        // will go over all files in folder and list them inside the array
+        File[] files = file.listFiles();
+        File[] filesSorted = new File[files.length];
+
+        // these loops sort the files for the filesSorted Array
+        for (int i = 0; i < filesSorted.length; i++) {
+            for (int j = 0; j < files.length; j++) {
+                if (files[j].getName().equals((i + 1) + ".png")) {
+                    filesSorted[i] = files[j];
                 }
-
             }
         }
-        return monsterList;
 
-    }
-
-
-    public static ArrayList<Crabby> getCrabs() {
-        BufferedImage img = getSpriteAtlas(LEVEL_ONE_DATA);
-        ArrayList<Crabby> list = new ArrayList<>();
-        for (int j = 0; j < img.getHeight(); j++)
-            for (int i = 0; i < img.getWidth(); i++) {
-                Color color = new Color(img.getRGB(i, j));
-                int value = color.getBlue();
-                if (value == CRABBY)
-                    list.add(new Crabby(i * Game.TILES_SIZE, j * Game.TILES_SIZE));
-            }
-        return list;
-
-    }
-
-
-
-    public static int[][] getLevelData() {
-
-        BufferedImage img = getSpriteAtlas(LEVEL_ONE_DATA);
-        int[][] levelData = new int[img.getHeight()][img.getWidth()];
-
-        for (int y = 0; y < img.getHeight(); y++) {
-            for (int x = 0; x < img.getWidth(); x++) {
-
-                Color color = new Color(img.getRGB(x, y));
-                int value = color.getRed();     // get red value on that position
-                if (value >= 48) {
-                    value = 0;
-                }
-                levelData[y][x] = value;
+        // take the sorted files froma above and put them in this array of images
+        BufferedImage[] images = new BufferedImage[filesSorted.length];
+        for (int i = 0; i < images.length; i++) {
+            try {
+                images[i] = ImageIO.read(filesSorted[i]);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         }
-        return levelData;
+
+        return images;
+
+
     }
+
+
+
+
 }
