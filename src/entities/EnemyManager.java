@@ -69,7 +69,7 @@ public class EnemyManager {
             if (monster.isAlive()) {
 
                 // monster.drawHitbox(g, xLevelOffset);
-                g.drawImage(monsterArray[monster.getEnemyState()][monster.getAnimationIndex()],
+                g.drawImage(monsterArray[monster.getState()][monster.getAnimationIndex()],
                         (int) monster.getHitbox().x - xLevelOffset - MONSTER_DRAWOFFSET_X + monster.flipX(),
                         (int) monster.getHitbox().y - MONSTER_DRAWOFFSET_Y,
                         MONSTER_DEFAULT_WIDTH * monster.flipWidth(), MONSTER_DEFAULT_HEIGHT, null);
@@ -82,7 +82,7 @@ public class EnemyManager {
     private void drawCrabs(Graphics g, int xLevelOffset) {
         for (Crabby c : crabbies) {
             if (c.isAlive()) {
-                g.drawImage(crabbyArray[c.getEnemyState()][c.getAnimationIndex()],
+                g.drawImage(crabbyArray[c.getState()][c.getAnimationIndex()],
                         (int) c.getHitbox().x - xLevelOffset - CRABBY_DRAWOFFSET_X,
                         (int) c.getHitbox().y - CRABBY_DRAWOFFSET_Y,
                         CRABBY_WIDTH, CRABBY_HEIGHT, null);

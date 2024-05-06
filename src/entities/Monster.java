@@ -2,7 +2,6 @@ package entities;
 
 import main.Game;
 
-import java.awt.*;
 import java.awt.geom.Rectangle2D;
 
 import static utilz.Constants.Directions.*;
@@ -11,10 +10,7 @@ import static utilz.Constants.EnemyConstants.*;
 
 public class Monster extends Enemy {
 
-    //attackBox
-    private Rectangle2D.Float attackBox;
     private int attackBoxOffsetX;
-
 
     public Monster(float x, float y) {
 
@@ -24,7 +20,7 @@ public class Monster extends Enemy {
         this.attackDistance = Game.TILES_SIZE / 1.8f;
 
         // monster stays in its default size, otherwise it's too tall
-        initHitbox(x, y, 16, 40);
+        initHitbox(16, 40);
         
         initAttackBox();
 
@@ -55,21 +51,15 @@ public class Monster extends Enemy {
 
     }
 
-    public void drawAttackBox(Graphics g, int levelOffsetX) {
-        g.setColor(Color.red);
-        g.drawRect((int)(attackBox.x - levelOffsetX), (int)attackBox.y, (int)attackBox.width, (int)attackBox.height);
-    }
-
-
     private void updateBehavior(int[][] levelData, Player player) {
         if (firstUpdate) {
             firstUpdateCheck(levelData);
         }
 
-        if (inAir) {
+        if (isInAir) {
             updateInAir(levelData);
         } else {
-            switch (enemyState) {
+            switch (state) {
 
                 case IDLE:
                     changeToNewEnemyState(WALK);
@@ -102,7 +92,6 @@ public class Monster extends Enemy {
         }
 
     }
-
 
 
     public int flipX() {

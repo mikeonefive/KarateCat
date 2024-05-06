@@ -43,7 +43,7 @@ public class MenuButton {
     }
 
     public void draw(Graphics g) {
-        g.drawImage(images[index], xPos - xOffsetCenter, yPos, BUTTON_WIDTH, BUTTON_HEIGHT, null);
+        g.drawImage(images[index], xPos - xOffsetCenter, yPos, BUTTON_WIDTH_DEFAULT, BUTTON_HEIGHT_DEFAULT, null);
 
     }
 

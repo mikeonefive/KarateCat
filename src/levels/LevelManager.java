@@ -35,6 +35,7 @@ public class LevelManager {
         game.getPlayGame().getEnemyManager().loadEnemies(newLevel);
         game.getPlayGame().getPlayer().loadLevelData(newLevel.getLvlData());
         game.getPlayGame().setMaxLevelOffset(newLevel.getLvlOffset());
+        game.getPlayGame().getObjectManager().loadObjects(newLevel);
     }
 
     private void buildAllLevels() {

@@ -1,5 +1,7 @@
 package entities;
 
+import main.Game;
+
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 
@@ -9,6 +11,18 @@ public abstract class Entity {      // you can't create an object of an abstract
     protected float x, y;       // protected only classes that extend Entity can use these, seen in package and subclasses
     protected int width, height;
     protected Rectangle2D.Float hitbox;
+    protected float walkSpeed;
+
+    protected int animationTick, animationIndex;
+    protected int state;
+    protected float airSpeed;
+    protected boolean isInAir = false;
+
+    protected int maxHealth;
+    protected int currentHealth;
+
+    // attackBox, area that the player attacks and if there's an enemy there it gets a can of whoopass (and vice versa)
+    protected Rectangle2D.Float attackBox;
 
     public Entity (float x, float y, int width, int height) {
         this.x = x;
@@ -23,7 +37,13 @@ public abstract class Entity {      // you can't create an object of an abstract
         g.drawRect((int)hitbox.x - xLvlOffset, (int)hitbox.y, (int)hitbox.width, (int)hitbox.height);
     }
 
-    protected void initHitbox(float x, float y, int width, int height) {
+    protected void drawAttackBox(Graphics graphics, int levelOffsetX) {
+        graphics.setColor(Color.red);
+        graphics.drawRect((int)attackBox.x - levelOffsetX, (int)attackBox.y, (int)attackBox.width, (int)attackBox.height);
+
+    }
+
+    protected void initHitbox(int width, int height) {
         hitbox = new Rectangle2D.Float(x, y, width, height);
     }
 
@@ -34,6 +54,14 @@ public abstract class Entity {      // you can't create an object of an abstract
 
     public Rectangle2D.Float getHitbox() {
         return hitbox;
+    }
+
+    public int getState() {
+        return state;
+    }
+
+    public int getAnimationIndex() {
+        return animationIndex;
     }
 
 }

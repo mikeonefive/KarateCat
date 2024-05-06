@@ -2,6 +2,9 @@ package levels;
 
 import entities.Monster;
 import main.Game;
+import objects.GameContainer;
+import objects.Potion;
+import utilz.HelpMethods;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -16,6 +19,8 @@ public class Level {
     private BufferedImage image;
     private int [][] levelData;
     private ArrayList<Monster> monsters;
+    private ArrayList<Potion> potions;
+    private ArrayList<GameContainer> containers;
 
     private int levelTilesWide;
     private int maxTilesOffset;
@@ -27,9 +32,22 @@ public class Level {
     public Level(BufferedImage image) {
         this.image = image;
         createLevelData();
+        
         createEnemies();
+
+        createPotions();
+        createContainers();
+
         calculateLevelOffset();
         calculatePlayerSpawnPosition();
+    }
+
+    private void createContainers() {
+        containers = HelpMethods.getContainers(image);
+    }
+
+    private void createPotions() {
+        potions = HelpMethods.getPotions(image);
     }
 
     private void calculatePlayerSpawnPosition() {
@@ -72,5 +90,13 @@ public class Level {
 
     public Point getPlayerSpawnCoordinates() {
         return playerSpawnPosition;
+    }
+
+    public ArrayList<Potion> getPotions() {
+        return potions;
+    }
+
+    public ArrayList<GameContainer> getContainers() {
+        return containers;
     }
 }

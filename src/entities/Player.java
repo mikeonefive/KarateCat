@@ -9,6 +9,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 
+import static utilz.Constants.*;
 import static utilz.Constants.PlayerConstants.*;
 import static utilz.HelpMethods.*;
 
@@ -16,15 +17,10 @@ public class Player extends Entity {
 
     private BufferedImage[][] animations;
 
-    private int animTick, animIndex, animSpeed = 15;
-    private int playerAction = IDLE;
-
-    private boolean up, left, right, down, jump;
+    private boolean left, right, jump;
     private boolean isMoving = false;
     private boolean isAttacking = false;
     private int attackType = -1; // Default value indicating no attack
-
-    private float playerSpeed = 1.0f * Game.SCALE;
 
     private int[][] levelData;
 
@@ -33,11 +29,9 @@ public class Player extends Entity {
     private float yDrawOffset = 25 * Game.SCALE;
 
     // jumping/gravity
-    private float airSpeed = 0f;
-    private float gravity = 0.05f * Game.SCALE;
     private float jumpSpeed = -2.50f * Game.SCALE;
     private float fallSpeedAfterCollision = 0.5f * Game.SCALE;
-    private boolean isInAir = false;
+
 
     // status bars UI
     private BufferedImage statusBarImg;
@@ -51,12 +45,7 @@ public class Player extends Entity {
     private int lifeBarXStart = (int)(16 * Game.SCALE);
     private int lifeBarYStart = (int)(15 * Game.SCALE);
 
-    private int maxHealth = 100;
-    private int currentHealth = maxHealth;
     private int healthWidth = lifeBarWidth;
-
-    // attackBox, area that the player attacks and if there's an enemy there it gets a can of whoopass
-    private Rectangle2D.Float attackBox;
 
     private int flipX = 0;
     private int flipW = 1;
@@ -68,10 +57,16 @@ public class Player extends Entity {
     public Player(float x, float y, int width, int height, PlayGame playGame) {
         super(x, y, width, height);        // we take in x and y and pass them over to the Entity class where they are stored
         this.playGame = playGame;
+        this.state = IDLE;
+
+        this.walkSpeed = 1.0f * Game.SCALE;
+
+        this.maxHealth = 100;
+        this.currentHealth = 50;
 
         loadAnimations();
 
-        initHitbox(x, y, (int)(12 * Game.SCALE), (int)(28 * Game.SCALE));
+        initHitbox((int)(12 * Game.SCALE), (int)(28 * Game.SCALE));
 
         initAttackBox();
     }
@@ -100,6 +95,10 @@ public class Player extends Entity {
         updateAttackBox();
 
         updatePosition();
+        if (isMoving) {
+            checkIfPotionTouched();
+        }
+
         if (isAttacking) {
             checkAttack();
         }
@@ -109,12 +108,17 @@ public class Player extends Entity {
 
     }
 
+    private void checkIfPotionTouched() {
+        playGame.checkIfPotionTouched(hitbox);
+    }
+
     private void checkAttack() {
-        if (checkedAttackAlready || animIndex != 4) {
+        if (checkedAttackAlready || animationIndex != 4) {
             return;
         }
         checkedAttackAlready = true;
         playGame.checkIfEnemyHitByPlayer(attackBox);
+        playGame.checkIfObjectHit(attackBox);
         
     }
 
@@ -137,7 +141,7 @@ public class Player extends Entity {
 
     public void render(Graphics graphics, int levelOffset) {
 
-        graphics.drawImage(animations[playerAction][animIndex],
+        graphics.drawImage(animations[state][animationIndex],
                 (int)(hitbox.x - xDrawOffset) - levelOffset + flipX,
                 (int)(hitbox.y - yDrawOffset),
                 width * flipW, height, null);   // flipW is -1 when we go to the left so we would flip the image in this case
@@ -148,11 +152,6 @@ public class Player extends Entity {
         drawStatusBar(graphics);
     }
 
-    private void drawAttackBox(Graphics graphics, int levelOffsetX) {
-        graphics.setColor(Color.red);
-        graphics.drawRect((int)attackBox.x - levelOffsetX, (int)attackBox.y, (int)attackBox.width, (int)attackBox.height);
-
-    }
 
     private void drawStatusBar(Graphics graphics) {
 
@@ -166,12 +165,12 @@ public class Player extends Entity {
 
     private void updateAnimationTick() {
 
-        animTick ++;
-        if (animTick >= animSpeed) {
-            animTick = 0;
-            animIndex ++;
-            if (animIndex >= getSpriteAmount(playerAction)) {
-                animIndex = 0;
+        animationTick ++;
+        if (animationTick >= ANIMATION_SPEED) {
+            animationTick = 0;
+            animationIndex ++;
+            if (animationIndex >= getSpriteAmount(state)) {
+                animationIndex = 0;
                 isAttacking = false;
                 checkedAttackAlready = false;
             }
@@ -180,19 +179,19 @@ public class Player extends Entity {
 
     public void setAnimation() {
 
-        int startAnimation = playerAction;
+        int startAnimation = state;
 
         if (isMoving) {
-            playerAction = WALK;
+            state = WALK;
         } else {
-            playerAction = IDLE;
+            state = IDLE;
         }
 
         if (isInAir) {
             if(airSpeed < 0) {   // are we going up?
-                playerAction = JUMP;
+                state = JUMP;
             } else
-                playerAction = FALL;
+                state = FALL;
 
         }
 
@@ -200,28 +199,28 @@ public class Player extends Entity {
             switch(attackType) {
 
                 case PUNCH:
-                    playerAction = PUNCH;
+                    state = PUNCH;
                     break;
 
                 case ROUNDKICK:
-                    playerAction = ROUNDKICK;
+                    state = ROUNDKICK;
                     break;
 
                 case UPPERCUT:
-                    playerAction = UPPERCUT;
+                    state = UPPERCUT;
                     break;
 
                 case SPINKICK:
-                    playerAction = SPINKICK;
+                    state = SPINKICK;
                     break;
             }
 
             // Check if the attack animation is new, not already inside the attack cycle
             // then we start with frame 3 -> faster attack (first frames are idle),
             // if we wanna change it for a certain attack type (like frame 4 or sth), we have to do so in the cases above
-            if (startAnimation != playerAction) {
-                animIndex = 3;
-                animTick = 0;
+            if (startAnimation != state) {
+                animationIndex = 3;
+                animationTick = 0;
                 return;
             }
 
@@ -229,14 +228,14 @@ public class Player extends Entity {
 
 
         // if we changed the animation -> new animation so we reset animationTick so we start again
-        if (startAnimation != playerAction) {
+        if (startAnimation != state) {
             resetAnimTick();
         }
     }
 
     private void resetAnimTick() {
-        animTick = 0;
-        animIndex = 0;
+        animationTick = 0;
+        animationIndex = 0;
     }
 
     private void updatePosition() {
@@ -260,12 +259,12 @@ public class Player extends Entity {
         float xSpeed = 0;   // temp var to pass into canMoveHere method (the next position we wanna move to)
 
         if (left) {
-            xSpeed -= playerSpeed;
+            xSpeed -= walkSpeed;
             flipX = width;
             flipW = -1;
         }
         if (right) {
-            xSpeed += playerSpeed;
+            xSpeed += walkSpeed;
             flipX = 0;
             flipW = 1;
         }
@@ -280,7 +279,7 @@ public class Player extends Entity {
 
             if (canMoveHere(hitbox.x, hitbox.y + airSpeed, hitbox.width, hitbox.height, levelData)) {
                 hitbox.y += airSpeed;
-                airSpeed += gravity;
+                airSpeed += GRAVITY;
                 updateXPos(xSpeed);
             } else {        // if we can't move up or down, meaning we hit the roof or floor
                 hitbox.y = getEntityYPosUnderRoofOrAboveFloor(hitbox, airSpeed);
@@ -342,6 +341,10 @@ public class Player extends Entity {
         }
     }
 
+    public void updatePower(int value) {
+        System.out.println("I feel much stronger now!");
+    }
+
     private void loadAnimations() {     // image input is handled with utilz LoadSafe class
 
         BufferedImage img = LoadSave.getSpriteAtlas(LoadSave.PLAYER_ATLAS);
@@ -366,8 +369,7 @@ public class Player extends Entity {
     public void resetDirBooleans() {
         left = false;
         right = false;
-        up = false;
-        down = false;
+
     }
 
     public void setAttacking(boolean isAttacking, int attackType) {
@@ -394,21 +396,6 @@ public class Player extends Entity {
         this.right = right;
     }
 
-    public boolean isDown() {
-        return down;
-    }
-
-    public void setDown(boolean down) {
-        this.down = down;
-    }
-
-    public boolean isUp() {
-        return up;
-    }
-
-    public void setUp(boolean up) {
-        this.up = up;
-    }
 
     public void setJump(boolean jump) {
         this.jump = jump;
@@ -420,7 +407,7 @@ public class Player extends Entity {
         isInAir = false;
         isAttacking = false;
         isMoving = false;
-        playerAction = IDLE;
+        state = IDLE;
         currentHealth = maxHealth;
 
         // player starting position at current level

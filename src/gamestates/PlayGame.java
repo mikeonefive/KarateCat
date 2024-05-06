@@ -4,6 +4,7 @@ import entities.EnemyManager;
 import entities.Player;
 import levels.LevelManager;
 import main.Game;
+import objects.ObjectManager;
 import ui.GameOverScreen;
 import ui.LevelCompleteOverlay;
 import ui.PauseOverlay;
@@ -23,6 +24,7 @@ public class PlayGame extends State implements StateMethods {     // in here we 
     private Player player;
     private LevelManager levelManager;
     private EnemyManager enemyManager;
+    private ObjectManager objectManager;
 
     private int xLevelOffset;
     private int leftBorder = (int)(0.2 * Game.GAME_WIDTH); // 20% of the game width = left border (if player is at 18% we need to move level to the left)
@@ -68,6 +70,7 @@ public class PlayGame extends State implements StateMethods {     // in here we 
 
     private void loadStartLevel() {
         enemyManager.loadEnemies(levelManager.getCurrentLevel());
+        objectManager.loadObjects(levelManager.getCurrentLevel());
     }
 
     private void calculateLevelOffset() {
@@ -79,6 +82,7 @@ public class PlayGame extends State implements StateMethods {     // in here we 
     private void initClasses() {
         levelManager = new LevelManager(game);
         enemyManager = new EnemyManager(this);
+        objectManager = new ObjectManager(this);
 
         player = new Player(200, 200, (int) (64 * Game.SCALE), (int) (64 * Game.SCALE), this);
         player.loadLevelData(levelManager.getCurrentLevel().getLvlData());
@@ -103,6 +107,7 @@ public class PlayGame extends State implements StateMethods {     // in here we 
 
         } else if (!isGameOver) {
             levelManager.update();
+            objectManager.update();
             player.update();
             enemyManager.update(levelManager.getCurrentLevel().getLvlData(), player);
             checkCloseToBorder();
@@ -138,6 +143,8 @@ public class PlayGame extends State implements StateMethods {     // in here we 
 
         enemyManager.draw(g, xLevelOffset);
 
+        objectManager.draw(g, xLevelOffset);
+
 
         if (isGamePaused) {
             pauseOverlay.draw(g);
@@ -154,7 +161,7 @@ public class PlayGame extends State implements StateMethods {     // in here we 
 
     private void drawClouds(Graphics g) {
 
-        for (int i = 0; i < 3; i++) {       // the xLevelOffset calculation here makes sure the clouds move at different speeds
+        for (int i = 0; i < 5; i++) {       // the xLevelOffset calculation here makes sure the clouds move at different speeds
             g.drawImage(bigCloudImg, i * BIG_CLOUD_WIDTH - (int)(xLevelOffset * 0.3) , (int) (219 * Game.SCALE), BIG_CLOUD_WIDTH, BIG_CLOUD_HEIGHT, null);
         }
 
@@ -172,6 +179,7 @@ public class PlayGame extends State implements StateMethods {     // in here we 
         isLevelComplete = false;
         player.resetAll();
         enemyManager.resetAllEnemies();
+        objectManager.resetAllObjects();
         
     }
 
@@ -179,8 +187,17 @@ public class PlayGame extends State implements StateMethods {     // in here we 
         this.isGameOver = isGameOver;
     }
 
+    public void checkIfObjectHit(Rectangle2D.Float attackBox) {
+        objectManager.checkIfObjectWasHit(attackBox);
+    }
+
+
     public void checkIfEnemyHitByPlayer(Rectangle2D.Float attackBoxPlayer) {
         enemyManager.checkIfEnemyWasHit(attackBoxPlayer);
+    }
+
+    public void checkIfPotionTouched(Rectangle2D.Float hitbox) {
+        objectManager.checkIfObjectTouched(hitbox);
     }
 
     @Override
@@ -336,4 +353,10 @@ public class PlayGame extends State implements StateMethods {     // in here we 
     public EnemyManager getEnemyManager() {
         return enemyManager;
     }
+
+    public ObjectManager getObjectManager() {
+        return objectManager;
+    }
+
+
 }

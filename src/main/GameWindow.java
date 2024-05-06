@@ -14,6 +14,7 @@ public class GameWindow
 
         jframe = new JFrame(); // create new object of type JFrame
 
+        jframe.setTitle("Karate Cat");
         jframe.setDefaultCloseOperation(jframe.EXIT_ON_CLOSE);
         jframe.add(gamePanel); // add gamePanel so we can draw sth and actually see it in the gameWindow
         jframe.setResizable(false);

@@ -19,11 +19,23 @@ import static utilz.Constants.EnemyConstants.MONSTER;
 
 public class LoadSave {
 
+    // player, enemies, level, objects
     public static final String PLAYER_ATLAS = "player_sprites.png";
     public static final String LEVEL_ATLAS = "outside_sprites.png";
 
+    public static final String PLAYGAME_BACKGROUND = "playgame_bg.png";
+    public static final String BIG_CLOUDS = "big_clouds.png";
+    public static final String SMALL_CLOUDS = "small_clouds.png";
+
+    public static final String MONSTER_SPRITES = "monster1_sprites.png";
+    public static final String CRABBY_SPRITES = "crabby_sprites.png";
+
+    public static final String POTION_ATLAS = "potions_sprites.png";
+    public static final String CONTAINER_ATLAS = "objects_sprites.png";
+
+    // menu, pause, complete, buttons
     public static final String MENU_BUTTON_ATLAS = "button_atlas.png";
-    public static final String MENU_BOARD = "menu_board.png";
+    public static final String MENU_BOARD = "menu.png";
     public static final String MENU_BACKGROUND = "menu_background.png";
 
     public static final String LEVEL_COMPLETE_IMG = "level_completed_sprite.png";
@@ -33,12 +45,7 @@ public class LoadSave {
     public static final String RSM_BUTTONS = "rsm_buttons.png";
     public static final String VOLUME_BUTTONS = "volume_buttons.png";
 
-    public static final String PLAYGAME_BACKGROUND = "playgame_bg.png";
-    public static final String BIG_CLOUDS = "big_clouds.png";
-    public static final String SMALL_CLOUDS = "small_clouds.png";
 
-    public static final String MONSTER_SPRITES = "monster1_sprites.png";
-    public static final String CRABBY_SPRITES = "crabby_sprites.png";
 
     public static final String STATUS_BAR = "lifeandattackbar.png";
 
@@ -88,7 +95,7 @@ public class LoadSave {
             }
         }
 
-        // take the sorted files froma above and put them in this array of images
+        // take the sorted files from above and put them in this array of images
         BufferedImage[] images = new BufferedImage[filesSorted.length];
         for (int i = 0; i < images.length; i++) {
             try {
