@@ -7,6 +7,14 @@ public class Constants {
     public static final float GRAVITY = 0.05f * Game.SCALE;
     public static final int ANIMATION_SPEED = 15;
 
+    public static class Projectiles {
+        public static final int CANNON_ARROW_DEFAULT_WIDTH = 22;
+        public static final int CANNON_ARROW_DEFAULT_HEIGHT = 6;
+
+        public static final int CANNON_ARROW_WIDTH = (int)(Game.SCALE * CANNON_ARROW_DEFAULT_WIDTH);
+        public static final int CANNON_ARROW_HEIGHT = (int)(Game.SCALE * CANNON_ARROW_DEFAULT_HEIGHT);
+        public static final float SPEED = 0.8f * Game.SCALE;
+    }
 
     public static class ObjectConstants {
 
@@ -14,6 +22,9 @@ public class Constants {
         public static final int BLUE_POTION = 1;
         public static final int BARREL = 2;
         public static final int BOX = 3;
+        public static final int SPIKE = 4;
+        public static final int CANNON_LEFT = 5;
+        public static final int CANNON_RIGHT = 6;
 
         public static final int RED_POTION_VALUE = 15; // for restoring health
         public static final int BLUE_POTION_VALUE = 10; // for getting more power
@@ -28,6 +39,17 @@ public class Constants {
         public static final int POTION_WIDTH = (int)(Game.SCALE * POTION_WIDTH_DEFAULT);
         public static final int POTION_HEIGHT = (int)(Game.SCALE * POTION_HEIGHT_DEFAULT);
 
+        public static final int SPIKE_WIDTH_DEFAULT = 32;
+        public static final int SPIKE_HEIGHT_DEFAULT = 32;
+        public static final int SPIKE_WIDTH = (int)(Game.SCALE * SPIKE_WIDTH_DEFAULT);
+        public static final int SPIKE_HEIGHT = (int)(Game.SCALE * SPIKE_HEIGHT_DEFAULT);
+
+        public static final int CANNON_WIDTH_DEFAULT = 32;
+        public static final int CANNON_HEIGHT_DEFAULT = 32;
+        public static final int CANNON_WIDTH = (int)(Game.SCALE * CANNON_WIDTH_DEFAULT);
+        public static final int CANNON_HEIGHT = (int)(Game.SCALE * CANNON_HEIGHT_DEFAULT);
+
+
         public static int getSpriteAmount(int objectType) {
             switch(objectType) {
                 case RED_POTION, BLUE_POTION:
@@ -35,6 +57,9 @@ public class Constants {
 
                 case BARREL, BOX:
                     return 8;
+
+                case CANNON_LEFT, CANNON_RIGHT:
+                    return 5;
             }
             return 1;
         }
@@ -58,17 +83,6 @@ public class Constants {
         public static final int WASHIT = 4;
 
 
-        public static final int CRABBY = 1;
-
-        public static final int CRABBY_WIDTH_DEFAULT = 72;
-        public static final int CRABBY_HEIGHT_DEFAULT = 32;
-
-        public static final int CRABBY_WIDTH = (int) (CRABBY_WIDTH_DEFAULT * Game.SCALE);
-        public static final int CRABBY_HEIGHT = (int) (CRABBY_HEIGHT_DEFAULT * Game.SCALE);
-
-        public static final int CRABBY_DRAWOFFSET_X = (int) (26 * Game.SCALE);
-        public static final int CRABBY_DRAWOFFSET_Y = (int) (9 * Game.SCALE);
-
         public static int getSpriteAmount(int enemyType, int enemyState) {
 
             switch(enemyType) {
@@ -82,19 +96,6 @@ public class Constants {
                             return 7;
                         case WASHIT:
                             return 3;
-                    }
-                case CRABBY:
-                    switch (enemyState) {
-                        case IDLE:
-                            return 9;
-                        case WALK:
-                            return 6;
-                        case ATTACK:
-                            return 7;
-                        case WASHIT:
-                            return 4;
-                        case DEAD:
-                            return 5;
                     }
             }
             return 0;
@@ -170,9 +171,9 @@ public class Constants {
 
     public static class Directions {
         public static final int LEFT = 0;
-        public static final int UP = 1;
+        // public static final int UP = 1;
         public static final int RIGHT = 2;
-        public static final int DOWN = 3;
+        // public static final int DOWN = 3;
 
     }
 

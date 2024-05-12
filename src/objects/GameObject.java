@@ -35,7 +35,9 @@ public class GameObject {
                 if (objectType == BARREL || objectType == BOX) {
                     doAnimation = false;
                     isActive = false;
-                }
+
+                } else if (objectType == CANNON_LEFT || objectType == CANNON_RIGHT)
+                    doAnimation = false;
             }
         }
     }
@@ -45,8 +47,9 @@ public class GameObject {
         animationTick = 0;
         isActive = true;
 
-        // box & barrel only animate when they get destroyed
-        if (objectType == BARREL || objectType == BOX) {
+        // box & barrel only animate when they get destroyed, cannons only animate when player in sight
+        if (objectType == BARREL || objectType == BOX
+                || objectType == CANNON_LEFT || objectType == CANNON_RIGHT) {
             doAnimation = false;
         } else {
             doAnimation = true;
@@ -93,6 +96,10 @@ public class GameObject {
 
     public int getAnimationIndex() {
         return animationIndex;
+    }
+
+    public int getAnimationTick() {
+        return animationTick;
     }
 
 

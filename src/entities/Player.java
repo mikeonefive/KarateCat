@@ -54,6 +54,8 @@ public class Player extends Entity {
 
     private PlayGame playGame;
 
+    private int tileY = 0;
+
     public Player(float x, float y, int width, int height, PlayGame playGame) {
         super(x, y, width, height);        // we take in x and y and pass them over to the Entity class where they are stored
         this.playGame = playGame;
@@ -62,7 +64,7 @@ public class Player extends Entity {
         this.walkSpeed = 1.0f * Game.SCALE;
 
         this.maxHealth = 100;
-        this.currentHealth = 50;
+        this.currentHealth = maxHealth;
 
         loadAnimations();
 
@@ -95,8 +97,12 @@ public class Player extends Entity {
         updateAttackBox();
 
         updatePosition();
+
         if (isMoving) {
             checkIfPotionTouched();
+            checkIfSpikesTouched();
+            checkIfFallenOff();
+            tileY = (int)(hitbox.y / Game.TILES_SIZE);
         }
 
         if (isAttacking) {
@@ -105,6 +111,17 @@ public class Player extends Entity {
 
         updateAnimationTick();
         setAnimation();
+
+    }
+
+    private void checkIfFallenOff() {
+        if (hitbox.y >= 620) {
+            kill();
+        }
+    }
+
+    private void checkIfSpikesTouched() {
+        playGame.checkIfSpikesTouched(this);
 
     }
 
@@ -226,7 +243,6 @@ public class Player extends Entity {
 
         }
 
-
         // if we changed the animation -> new animation so we reset animationTick so we start again
         if (startAnimation != state) {
             resetAnimTick();
@@ -341,6 +357,10 @@ public class Player extends Entity {
         }
     }
 
+    public void kill() {
+        currentHealth = 0;
+    }
+
     public void updatePower(int value) {
         System.out.println("I feel much stronger now!");
     }
@@ -377,8 +397,6 @@ public class Player extends Entity {
         this.attackType = attackType;
 
     }
-
-
 
     public boolean isLeft() {
         return left;
@@ -418,4 +436,10 @@ public class Player extends Entity {
             isInAir = true;
         }
     }
+
+    public int getTileY() {
+        return tileY;
+    }
+
+
 }

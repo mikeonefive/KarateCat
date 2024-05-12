@@ -17,10 +17,6 @@ public class EnemyManager {
     private BufferedImage[][] monsterArray;
     private ArrayList<Monster> monsters = new ArrayList<>();
 
-    private BufferedImage[][] crabbyArray;
-    private ArrayList<Crabby> crabbies = new ArrayList<>();
-
-
     public EnemyManager(PlayGame playGame) {
         this.playGame = playGame;
         loadEnemyImages();
@@ -46,13 +42,6 @@ public class EnemyManager {
             }
         }
 
-        for (Crabby crab : crabbies) {
-            if (crab.isAlive()) {
-                crab.update(levelData, player);
-                isAnyEnemyActive = true;
-            }
-        }
-
         if (!isAnyEnemyActive)
             playGame.setLevelComplete(true);
 
@@ -60,7 +49,6 @@ public class EnemyManager {
 
     public void draw(Graphics g, int xLevelOffset) {
         drawMonsters(g, xLevelOffset);
-        drawCrabs(g, xLevelOffset);
     }
 
     private void drawMonsters(Graphics g, int xLevelOffset) {
@@ -79,18 +67,6 @@ public class EnemyManager {
         }
     }
 
-    private void drawCrabs(Graphics g, int xLevelOffset) {
-        for (Crabby c : crabbies) {
-            if (c.isAlive()) {
-                g.drawImage(crabbyArray[c.getState()][c.getAnimationIndex()],
-                        (int) c.getHitbox().x - xLevelOffset - CRABBY_DRAWOFFSET_X,
-                        (int) c.getHitbox().y - CRABBY_DRAWOFFSET_Y,
-                        CRABBY_WIDTH, CRABBY_HEIGHT, null);
-                // c.drawHitbox(g, xLvlOffset);
-            }
-        }
-
-    }
 
     public void checkIfEnemyWasHit(Rectangle2D.Float attackBox) {
         for (Monster monster : monsters) {
@@ -116,13 +92,6 @@ public class EnemyManager {
             }
 
         }
-
-
-        crabbyArray = new BufferedImage[5][9];
-        BufferedImage tempCrabImg = LoadSave.getSpriteAtlas(LoadSave.CRABBY_SPRITES);
-        for (int j = 0; j < crabbyArray.length; j++)
-            for (int i = 0; i < crabbyArray[j].length; i++)
-                crabbyArray[j][i] = tempCrabImg.getSubimage(i * CRABBY_WIDTH_DEFAULT, j * CRABBY_HEIGHT_DEFAULT, CRABBY_WIDTH_DEFAULT, CRABBY_HEIGHT_DEFAULT);
     }
 
     public void resetAllEnemies() {
@@ -130,9 +99,6 @@ public class EnemyManager {
             monster.resetEnemy();
         }
 
-        for (Crabby c : crabbies) {
-            c.resetEnemy();
-        }
     }
 
 }

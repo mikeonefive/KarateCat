@@ -107,7 +107,7 @@ public class PlayGame extends State implements StateMethods {     // in here we 
 
         } else if (!isGameOver) {
             levelManager.update();
-            objectManager.update();
+            objectManager.update(levelManager.getCurrentLevel().getLvlData(), player);
             player.update();
             enemyManager.update(levelManager.getCurrentLevel().getLvlData(), player);
             checkCloseToBorder();
@@ -198,6 +198,10 @@ public class PlayGame extends State implements StateMethods {     // in here we 
 
     public void checkIfPotionTouched(Rectangle2D.Float hitbox) {
         objectManager.checkIfObjectTouched(hitbox);
+    }
+
+    public void checkIfSpikesTouched(Player player) {
+        objectManager.checkIfSpikesTouched(player);
     }
 
     @Override
@@ -357,6 +361,11 @@ public class PlayGame extends State implements StateMethods {     // in here we 
     public ObjectManager getObjectManager() {
         return objectManager;
     }
+
+    public LevelManager getLevelManager() {
+        return levelManager;
+    }
+
 
 
 }

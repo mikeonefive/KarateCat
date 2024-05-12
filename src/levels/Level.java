@@ -2,8 +2,10 @@ package levels;
 
 import entities.Monster;
 import main.Game;
+import objects.Cannon;
 import objects.GameContainer;
 import objects.Potion;
+import objects.Spike;
 import utilz.HelpMethods;
 
 import java.awt.*;
@@ -21,6 +23,8 @@ public class Level {
     private ArrayList<Monster> monsters;
     private ArrayList<Potion> potions;
     private ArrayList<GameContainer> containers;
+    private ArrayList<Spike> spikes;
+    private ArrayList<Cannon> cannons;
 
     private int levelTilesWide;
     private int maxTilesOffset;
@@ -38,8 +42,20 @@ public class Level {
         createPotions();
         createContainers();
 
+        createSpikes();
+        
+        createCannons();
+
         calculateLevelOffset();
         calculatePlayerSpawnPosition();
+    }
+
+    private void createCannons() {
+        cannons = HelpMethods.getCannons(image);
+    }
+
+    private void createSpikes() {
+        spikes = HelpMethods.getSpikes(image);
     }
 
     private void createContainers() {
@@ -98,5 +114,13 @@ public class Level {
 
     public ArrayList<GameContainer> getContainers() {
         return containers;
+    }
+
+    public ArrayList<Spike> getSpikes() {
+        return spikes;
+    }
+
+    public ArrayList<Cannon> getCannons() {
+        return cannons;
     }
 }

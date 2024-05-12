@@ -1,21 +1,12 @@
 package utilz;
 
-import entities.Crabby;
-import entities.Monster;
-import main.Game;
-
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-
-import static utilz.Constants.EnemyConstants.CRABBY;
-import static utilz.Constants.EnemyConstants.MONSTER;
 
 public class LoadSave {
 
@@ -28,10 +19,13 @@ public class LoadSave {
     public static final String SMALL_CLOUDS = "small_clouds.png";
 
     public static final String MONSTER_SPRITES = "monster1_sprites.png";
-    public static final String CRABBY_SPRITES = "crabby_sprites.png";
+    // public static final String CRABBY_SPRITES = "crabby_sprites.png";
 
     public static final String POTION_ATLAS = "potions_sprites.png";
     public static final String CONTAINER_ATLAS = "objects_sprites.png";
+    public static final String SPIKES_ATLAS = "spikes.png";
+    public static final String CANNON_ATLAS = "archer.png";
+    public static final String CANNON_ARROW = "arrow.png";
 
     // menu, pause, complete, buttons
     public static final String MENU_BUTTON_ATLAS = "button_atlas.png";

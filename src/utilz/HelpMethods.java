@@ -1,17 +1,14 @@
 package utilz;
 
-import entities.Crabby;
 import entities.Monster;
 import main.Game;
-import objects.GameContainer;
-import objects.Potion;
+import objects.*;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-import static utilz.Constants.EnemyConstants.CRABBY;
 import static utilz.Constants.EnemyConstants.MONSTER;
 
 import static utilz.Constants.ObjectConstants.*;
@@ -67,6 +64,13 @@ public class HelpMethods {
 
     }
 
+    public static boolean isProjectileHittingLevelBorder(Projectile p, int[][] levelData) {
+
+        // width & height divided by 2 because we want the middle part of the object not the upper left or something
+        return isSolid(p.getHitbox().x + p.getHitbox().width / 2,
+                p.getHitbox().y + p.getHitbox().height / 2, levelData);
+    }
+
     public static float getEntityXPosNextToWall(Rectangle2D.Float hitbox, float xSpeed) {
         int currentTile = (int)(hitbox.x / Game.TILES_SIZE);     // current tile our player is in in pixels
         if (xSpeed > 0) {       // if the colliding tile is to the right
@@ -79,7 +83,7 @@ public class HelpMethods {
     }
 
     public static float getEntityYPosUnderRoofOrAboveFloor(Rectangle2D.Float hitbox, float airSpeed) {
-        int currentTile = (int)(hitbox.y / Game.TILES_SIZE);     // current tile our player is in in pixels
+        int currentTile = (int)(hitbox.y / Game.TILES_SIZE);     // current tile our player is in pixels
         if (airSpeed > 0) {       // are going we down? falling, touching floor
             int tileYPos = currentTile * Game.TILES_SIZE;
             int yOffset = (int)(Game.TILES_SIZE - hitbox.height);
@@ -112,21 +116,41 @@ public class HelpMethods {
         return isSolid(hitbox.x + xSpeed, hitbox.y + hitbox.height + 1, levelData);
     }
 
-    public static boolean areAllCurrentTilesWalkable(int xStart, int xEnd, int y, int[][] levelData)
-    {
-        for (int i = 0; i < xEnd - xStart; i++)
+    public static boolean canCannonSeePlayer(int[][] levelData, Rectangle2D.Float hitboxObject1,
+                                             Rectangle2D.Float hitboxObject2, int yTileCurrent) {
+
+        int xTileObject1 = (int) (hitboxObject1.x / Game.TILES_SIZE);
+        int xTileObject2 = (int) (hitboxObject2.x / Game.TILES_SIZE);
+
+        // we have to check which tile is greater because in the loop we have to know which direction we wanna check
+        if (xTileObject1 > xTileObject2)
         {
+            return areAllTilesClear(xTileObject2, xTileObject1, yTileCurrent, levelData);
+        } else {
+            return areAllTilesClear(xTileObject1, xTileObject2, yTileCurrent, levelData);
+        }
+    }
+
+    public static boolean areAllTilesClear(int xStart, int xEnd, int y, int[][] levelData) { // meaning no walkable tiles between the 2 points
+        for (int i = 0; i < xEnd - xStart; i++)
             // check the difference between object1 and object2 xTile and if any of the tiles between them are solid
             if (isTileSolid(xStart + i, y, levelData))
-            {
                 return false;
-            }
-            // check if tile underneath the current one is walkable, if it isn't then return false
-            if (!isTileSolid(xStart + i, y + 1, levelData))
-            {
-                return false;
-            }
 
+        return true;
+    }
+
+    public static boolean areAllCurrentTilesWalkable(int xStart, int xEnd, int y, int[][] levelData) {
+
+        if (areAllTilesClear(xStart, xEnd, y, levelData)) {
+            for (int i = 0; i < xEnd - xStart; i++) {
+
+                // check if tile underneath the current one is walkable, if it isn't then return false
+                if (!isTileSolid(xStart + i, y + 1, levelData)) {
+                    return false;
+                }
+
+            }
         }
         return true;
     }
@@ -187,18 +211,7 @@ public class HelpMethods {
     }
 
 
-    public static ArrayList<Crabby> getCrabs(BufferedImage img) {
 
-        ArrayList<Crabby> list = new ArrayList<>();
-        for (int j = 0; j < img.getHeight(); j++)
-            for (int i = 0; i < img.getWidth(); i++) {
-                Color color = new Color(img.getRGB(i, j));
-                int value = color.getBlue();
-                if (value == CRABBY)
-                    list.add(new Crabby(i * Game.TILES_SIZE, j * Game.TILES_SIZE));
-            }
-        return list;
-    }
 
     public static Point getPlayerSpawnPosition(BufferedImage img) {
         for (int y = 0; y < img.getHeight(); y++)
@@ -246,4 +259,37 @@ public class HelpMethods {
         return containersList;
     }
 
+    public static ArrayList<Spike> getSpikes(BufferedImage image) {
+        ArrayList<Spike> spikesList = new ArrayList<>();
+
+        for (int y = 0; y < image.getHeight(); y++) {
+            for (int x = 0; x < image.getWidth(); x++) {
+
+                Color color = new Color(image.getRGB(x, y));
+                int value = color.getBlue();     // get blue value on that position
+                if (value == SPIKE) {
+                    spikesList.add(new Spike(x * Game.TILES_SIZE, y * Game.TILES_SIZE, SPIKE));
+                }
+            }
+        }
+        return spikesList;
+
+    }
+
+    public static ArrayList<Cannon> getCannons(BufferedImage image) {
+        ArrayList<Cannon> list = new ArrayList<>();
+
+        for (int y = 0; y < image.getHeight(); y++) {
+            for (int x = 0; x < image.getWidth(); x++) {
+
+                Color color = new Color(image.getRGB(x, y));
+                int value = color.getBlue();     // get blue value on that position
+                if (value == CANNON_LEFT || value == CANNON_RIGHT) {
+                    list.add(new Cannon(x * Game.TILES_SIZE, y * Game.TILES_SIZE, value));
+                }
+            }
+        }
+        return list;
+
+    }
 }
