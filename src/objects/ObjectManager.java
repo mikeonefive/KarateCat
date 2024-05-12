@@ -146,16 +146,16 @@ public class ObjectManager {
         for (Projectile p: projectiles) {
             if (p.getIsActive()) {
                 p.updatePosition();
-            }
 
-            // is projectile the hitting the player?
-            if (p.getHitbox().intersects(player.getHitbox())) {
-                player.updateHealth(-10);
-                p.setIsActive(false);
-            }
-            // is projectile hitting the border of the level?
-            else if (isProjectileHittingLevelBorder(p, levelData)) {
-                p.setIsActive(false);
+                // is projectile the hitting the player?
+                if (p.getHitbox().intersects(player.getHitbox())) {
+                    player.updateHealth(-20);
+                    p.setIsActive(false);
+                }
+                // is projectile hitting the border of the level?
+                else if (isProjectileHittingLevelBorder(p, levelData)) {
+                    p.setIsActive(false);
+                }
             }
         }
     }

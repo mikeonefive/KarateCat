@@ -33,6 +33,8 @@ public class LoadSave {
     public static final String MENU_BACKGROUND = "menu_background.png";
 
     public static final String LEVEL_COMPLETE_IMG = "level_completed_sprite.png";
+    public static final String DEATH_SCREEN = "death_screen.png";
+    public static final String GAMEOVER_BUTTON_ATLAS = "gameover_button_atlas.png";
 
     public static final String PAUSE_BACKGROUND = "pause_background.png";
     public static final String SOUND_BUTTONS = "sound_buttons.png";

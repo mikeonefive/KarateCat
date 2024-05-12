@@ -45,6 +45,8 @@ public class PlayGame extends State implements StateMethods {     // in here we 
     private LevelCompleteOverlay levelCompleteOverlay;
     private boolean isLevelComplete = false;
 
+    private boolean isPlayerDying;
+
 
     public PlayGame(Game game) {
         super(game);
@@ -105,7 +107,13 @@ public class PlayGame extends State implements StateMethods {     // in here we 
         } else if (isLevelComplete) {
             levelCompleteOverlay.update();
 
-        } else if (!isGameOver) {
+        } else if (isGameOver) {
+            gameOverScreen.update();
+
+        } else if (isPlayerDying) {
+            player.update();
+
+        } else {
             levelManager.update();
             objectManager.update(levelManager.getCurrentLevel().getLvlData(), player);
             player.update();
@@ -177,6 +185,7 @@ public class PlayGame extends State implements StateMethods {     // in here we 
         isGameOver = false;
         isGamePaused = false;
         isLevelComplete = false;
+        isPlayerDying = false;
         player.resetAll();
         enemyManager.resetAllEnemies();
         objectManager.resetAllObjects();
@@ -231,7 +240,9 @@ public class PlayGame extends State implements StateMethods {     // in here we 
             if (isLevelComplete) {
                 levelCompleteOverlay.mousePressed(e);
             }
-        }
+
+        } else
+            gameOverScreen.mousePressed(e);
     }
 
     @Override
@@ -244,7 +255,8 @@ public class PlayGame extends State implements StateMethods {     // in here we 
             if (isLevelComplete) {
                 levelCompleteOverlay.mouseReleased(e);
             }
-        }
+        } else
+            gameOverScreen.mouseReleased(e);
     }
 
     @Override
@@ -257,7 +269,8 @@ public class PlayGame extends State implements StateMethods {     // in here we 
             if (isLevelComplete) {
                 levelCompleteOverlay.mouseMoved(e);
             }
-        }
+        } else
+            gameOverScreen.mouseMoved(e);
 
     }
 
@@ -367,5 +380,7 @@ public class PlayGame extends State implements StateMethods {     // in here we 
     }
 
 
-
+    public void setPlayerDying(boolean isPlayerDying) {
+        this.isPlayerDying = isPlayerDying;
+    }
 }

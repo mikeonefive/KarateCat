@@ -158,6 +158,13 @@ public class Constants {
             public static final int RSM_HEIGHT = (int) (RSM_DEFAULT_HEIGHT * Game.SCALE);
         }
 
+        public static class GameOverButtons {
+            public static final int GAMEOVER_DEFAULT_WIDTH = 80;
+            public static final int GAMEOVER_DEFAULT_HEIGHT = 54;
+            public static final int GAMEOVER_WIDTH = (int) (GAMEOVER_DEFAULT_WIDTH * Game.SCALE);
+            public static final int GAMEOVER_HEIGHT = (int) (GAMEOVER_DEFAULT_HEIGHT * Game.SCALE);
+        }
+
         public static class VolumeButtons {
             public static final int VOLUME_DEFAULT_WIDTH = 19;
             public static final int VOLUME_DEFAULT_HEIGHT = 31;

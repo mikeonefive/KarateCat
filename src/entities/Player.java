@@ -90,7 +90,16 @@ public class Player extends Entity {
 
         // check if player dead?
         if (currentHealth <= 0) {
-           playGame.setGameOver(true);
+            if (state != DEAD) {
+                state = DEAD;
+                animationTick = 0;
+                animationIndex = 0;
+                playGame.setPlayerDying(true);
+            } else if (animationIndex == getSpriteAmount(DEAD) - 1 && animationTick >= ANIMATION_SPEED - 1) {
+                playGame.setGameOver(true);
+            } else
+                updateAnimationTick();
+
            return;
         }
 
