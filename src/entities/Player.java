@@ -125,7 +125,8 @@ public class Player extends Entity {
 
     private void checkIfFallenOff() {
         if (hitbox.y >= 620) {
-            kill();
+            hitbox.y = 673;
+            playGame.setGameOver(true);
         }
     }
 
