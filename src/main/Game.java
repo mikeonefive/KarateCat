@@ -1,10 +1,12 @@
 package main;
 
 
+import gamestates.GameOptions;
 import gamestates.GameState;
 import gamestates.Menu;
 import gamestates.PlayGame;
-import utilz.LoadSave;
+import ui.AudioOptions;
+
 
 import java.awt.*;
 
@@ -21,6 +23,8 @@ public class Game implements Runnable
 
     private PlayGame playGame;
     private Menu menu;
+    private GameOptions gameOptions;
+    private AudioOptions audioOptions;
 
 
     public final static int TILES_DEFAULT_SIZE = 32;
@@ -51,8 +55,10 @@ public class Game implements Runnable
 
     private void initClasses() {
 
+        audioOptions = new AudioOptions();  // this is created here, so we can use it in pauseScreen and Options but we use same instance
         menu = new Menu(this);
         playGame = new PlayGame(this);
+        gameOptions = new GameOptions(this);
     }
 
     private void startGameLoop() {
@@ -73,6 +79,9 @@ public class Game implements Runnable
                 break;
 
             case OPTIONS:
+                gameOptions.update();
+                break;
+
             case QUIT:
             default:
                 System.exit(0);
@@ -90,6 +99,10 @@ public class Game implements Runnable
 
             case MENU:
                 menu.draw(g);
+                break;
+
+            case OPTIONS:
+                gameOptions.draw(g);
                 break;
 
             default:
@@ -163,6 +176,14 @@ public class Game implements Runnable
 
     public PlayGame getPlayGame() {
         return playGame;
+    }
+
+    public GameOptions getGameOptions() {
+        return gameOptions;
+    }
+
+    public AudioOptions getAudioOptions() {
+        return audioOptions;
     }
 
 

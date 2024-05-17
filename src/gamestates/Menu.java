@@ -43,7 +43,7 @@ public class Menu extends State implements StateMethods {
     @Override
     public void update() {
 
-        for(MenuButton menuButton : buttons) {
+        for (MenuButton menuButton : buttons) {
             menuButton.update();
         }
 
@@ -55,7 +55,7 @@ public class Menu extends State implements StateMethods {
         g.drawImage(backgroundImage, 0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT, null);
         g.drawImage(backgroundBoard, menuX, menuY, menuWidth, menuHeight, null);
 
-        for(MenuButton menuButton : buttons) {
+        for (MenuButton menuButton : buttons) {
             menuButton.draw(g);
         }
     }
@@ -67,8 +67,8 @@ public class Menu extends State implements StateMethods {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        for(MenuButton menuButton : buttons) {
-            if(isInsideButton(e, menuButton)) {
+        for (MenuButton menuButton : buttons) {
+            if (isInsideButton(e, menuButton)) {
                 menuButton.setMousePressed(true);
                 break;
             }
@@ -91,20 +91,23 @@ public class Menu extends State implements StateMethods {
 
     }
 
+
+
     private void resetButtons() {
-        for(MenuButton menuButton : buttons) {
+        for (MenuButton menuButton : buttons) {
             menuButton.resetBools();
         }
+
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        for(MenuButton menuButton : buttons) {
+        for (MenuButton menuButton : buttons) {
             menuButton.setMouseOver(false);
         }
 
-        for(MenuButton menuButton : buttons) {
-            if(isInsideButton(e, menuButton)) {
+        for (MenuButton menuButton : buttons) {
+            if (isInsideButton(e, menuButton)) {
                 menuButton.setMouseOver(true);
                 break;
             }
