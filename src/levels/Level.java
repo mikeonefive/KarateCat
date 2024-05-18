@@ -1,5 +1,6 @@
 package levels;
 
+import entities.Ghost;
 import entities.Monster;
 import main.Game;
 import objects.Cannon;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 
 import static utilz.HelpMethods.getLevelData;
 import static utilz.HelpMethods.getMonsters;
+import static utilz.HelpMethods.getGhosts;
 import static utilz.HelpMethods.getPlayerSpawnPosition;
 
 public class Level {
@@ -21,6 +23,7 @@ public class Level {
     private BufferedImage image;
     private int [][] levelData;
     private ArrayList<Monster> monsters;
+    private ArrayList<Ghost> ghosts;
     private ArrayList<Potion> potions;
     private ArrayList<GameContainer> containers;
     private ArrayList<Spike> spikes;
@@ -80,6 +83,7 @@ public class Level {
     private void createEnemies() {
 
         monsters = getMonsters(image);
+        ghosts = getGhosts(image);
     }
 
     private void createLevelData() {
@@ -102,6 +106,10 @@ public class Level {
 
     public ArrayList<Monster> getMonstaz() {
         return monsters;
+    }
+
+    public ArrayList<Ghost> getGhostz() {
+        return ghosts;
     }
 
     public Point getPlayerSpawnCoordinates() {

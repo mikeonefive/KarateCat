@@ -19,12 +19,12 @@ public class LoadSave {
     public static final String SMALL_CLOUDS = "small_clouds.png";
 
     public static final String MONSTER_SPRITES = "monster1_sprites.png";
-    // public static final String CRABBY_SPRITES = "crabby_sprites.png";
+    public static final String GHOST_SPRITES = "ghost_sprites.png";
 
     public static final String POTION_ATLAS = "potions_sprites.png";
     public static final String CONTAINER_ATLAS = "objects_sprites.png";
     public static final String SPIKES_ATLAS = "spikes.png";
-    public static final String CANNON_ATLAS = "archer.png";
+    public static final String CANNON_ATLAS = "archer_sprites.png";
     public static final String CANNON_ARROW = "arrow.png";
 
     // menu, pause, complete, buttons

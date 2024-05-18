@@ -1,5 +1,6 @@
 package utilz;
 
+import entities.Ghost;
 import entities.Monster;
 import main.Game;
 import objects.*;
@@ -9,6 +10,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import static utilz.Constants.EnemyConstants.GHOST;
 import static utilz.Constants.EnemyConstants.MONSTER;
 
 import static utilz.Constants.ObjectConstants.*;
@@ -200,7 +202,7 @@ public class HelpMethods {
             for (int x = 0; x < img.getWidth(); x++) {
 
                 Color color = new Color(img.getRGB(x, y));
-                int value = color.getGreen();     // get green value on that position, if it's 0 meaning SKULL then we add a new one to the list
+                int value = color.getGreen();     // get green value on that position, if it's 0 meaning MONSTER then we add a new one to the list
                 if (value == MONSTER) {
                     monsterList.add(new Monster(x * Game.TILES_SIZE, y * Game.TILES_SIZE));
                 }
@@ -208,7 +210,24 @@ public class HelpMethods {
             }
         }
         return monsterList;
+    }
 
+    public static ArrayList<Ghost> getGhosts(BufferedImage img) {
+
+        ArrayList<Ghost> ghostList = new ArrayList<>();
+
+        for (int y = 0; y < img.getHeight(); y++) {
+            for (int x = 0; x < img.getWidth(); x++) {
+
+                Color color = new Color(img.getRGB(x, y));
+                int value = color.getGreen();     // get green value on that position, if it's 1 meaning GHOST then we add a new one to the list
+                if (value == GHOST) {
+                    ghostList.add(new Ghost(x * Game.TILES_SIZE, y * Game.TILES_SIZE));
+                }
+
+            }
+        }
+        return ghostList;
     }
 
 

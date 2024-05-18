@@ -17,6 +17,9 @@ public class EnemyManager {
     private BufferedImage[][] monsterArray;
     private ArrayList<Monster> monsters = new ArrayList<>();
 
+    private BufferedImage[][] ghostArray;
+    private ArrayList<Ghost> ghosts = new ArrayList<>();
+
     public EnemyManager(PlayGame playGame) {
         this.playGame = playGame;
         loadEnemyImages();
@@ -25,6 +28,7 @@ public class EnemyManager {
 
     public void loadEnemies(Level level) {
         monsters = level.getMonstaz();
+        ghosts = level.getGhostz();
         // System.out.println("that many monsters in game: " + monsters.size());
 
         // crabbies = level.getCrabs();
@@ -42,6 +46,14 @@ public class EnemyManager {
             }
         }
 
+        for (Ghost ghost : ghosts) {
+            if (ghost.isAlive()) {
+                ghost.update(levelData, player);
+                // if we don't set the isAnyEnemyActive then ghosts can't be killed
+                // isAnyEnemyActive = true;
+            }
+        }
+
         if (!isAnyEnemyActive)
             playGame.setLevelComplete(true);
 
@@ -49,6 +61,7 @@ public class EnemyManager {
 
     public void draw(Graphics g, int xLevelOffset) {
         drawMonsters(g, xLevelOffset);
+        drawGhosts(g, xLevelOffset);
     }
 
     private void drawMonsters(Graphics g, int xLevelOffset) {
@@ -63,6 +76,22 @@ public class EnemyManager {
                         MONSTER_DEFAULT_WIDTH * monster.flipWidth(), MONSTER_DEFAULT_HEIGHT, null);
 
                 // monster.drawAttackBox(g, xLevelOffset);
+            }
+        }
+    }
+
+    private void drawGhosts(Graphics g, int xLevelOffset) {
+
+        for (Ghost ghost : ghosts) {
+            if (ghost.isAlive()) {
+
+                // ghost.drawHitbox(g, xLevelOffset);
+                g.drawImage(ghostArray[ghost.getState()][ghost.getAnimationIndex()],
+                        (int) ghost.getHitbox().x - xLevelOffset - GHOST_DRAWOFFSET_X + ghost.flipX(),
+                        (int) ghost.getHitbox().y - GHOST_DRAWOFFSET_Y,
+                        GHOST_WIDTH * ghost.flipWidth(), GHOST_HEIGHT, null);
+
+                // ghost.drawAttackBox(g, xLevelOffset);
             }
         }
     }
@@ -82,13 +111,25 @@ public class EnemyManager {
 
     private void loadEnemyImages() {
 
+        // Monsters
         monsterArray = new BufferedImage[4][7];
-        BufferedImage temp = LoadSave.getSpriteAtlas(LoadSave.MONSTER_SPRITES);
+        BufferedImage tempMonster = LoadSave.getSpriteAtlas(LoadSave.MONSTER_SPRITES);
 
         for (int y = 0; y < monsterArray.length; y++) {
             for (int x = 0; x < monsterArray[y].length; x++) {
-                monsterArray[y][x] = temp.getSubimage(x * MONSTER_DEFAULT_WIDTH, y * MONSTER_DEFAULT_HEIGHT,
+                monsterArray[y][x] = tempMonster.getSubimage(x * MONSTER_DEFAULT_WIDTH, y * MONSTER_DEFAULT_HEIGHT,
                                                         MONSTER_DEFAULT_WIDTH, MONSTER_DEFAULT_HEIGHT);
+            }
+
+        }
+
+        // Ghosts
+        ghostArray = new BufferedImage[4][6];
+        BufferedImage tempGhost = LoadSave.getSpriteAtlas(LoadSave.GHOST_SPRITES);
+        for (int y = 0; y < ghostArray.length; y++) {
+            for (int x = 0; x < ghostArray[y].length; x++) {
+                ghostArray[y][x] = tempGhost.getSubimage(x * GHOST_DEFAULT_WIDTH, y * GHOST_DEFAULT_HEIGHT,
+                        GHOST_DEFAULT_WIDTH, GHOST_DEFAULT_HEIGHT);
             }
 
         }
@@ -97,6 +138,10 @@ public class EnemyManager {
     public void resetAllEnemies() {
         for (Monster monster : monsters) {
             monster.resetEnemy();
+        }
+
+        for (Ghost ghost : ghosts) {
+            ghost.resetEnemy();
         }
 
     }
