@@ -1,12 +1,15 @@
 package entities;
 
+import gamestates.PlayGame;
 import main.Game;
 import utilz.LoadSave;
 
 import java.awt.*;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 
+import static utilz.Constants.*;
 import static utilz.Constants.PlayerConstants.*;
 import static utilz.HelpMethods.*;
 
@@ -14,12 +17,10 @@ public class Player extends Entity {
 
     private BufferedImage[][] animations;
 
-    private int animTick, animIndex, animSpeed = 15;
-    private int playerAction = IDLE;
-
-    private boolean up, left, right, down, jump;
-    private boolean isMoving = false, isAttacking = false;
-    private float playerSpeed = 2;
+    private boolean left, right, jump;
+    private boolean isMoving = false;
+    private boolean isAttacking = false;
+    private int attackType = -1; // Default value indicating no attack
 
     private int[][] levelData;
 
@@ -28,77 +29,239 @@ public class Player extends Entity {
     private float yDrawOffset = 25 * Game.SCALE;
 
     // jumping/gravity
-    private float airSpeed = 0f;
-    private float gravity = 0.05f * Game.SCALE;
     private float jumpSpeed = -2.50f * Game.SCALE;
     private float fallSpeedAfterCollision = 0.5f * Game.SCALE;
-    private boolean isInAir = false;
 
 
-    public Player(float x, float y, int width, int height) {
+    // status bars UI
+    private BufferedImage statusBarImg;
+    private int statusBarWidth = (int)(84 * Game.SCALE);
+    private int statusBarHeight = (int)(59 * Game.SCALE);
+    private int statusBarX = (int)(10 * Game.SCALE);
+    private int statusBarY = (int)(10 * Game.SCALE);
+
+    private int lifeBarWidth = (int)(62 * Game.SCALE);
+    private int lifeBarHeight = (int)(10 * Game.SCALE);
+    private int lifeBarXStart = (int)(16 * Game.SCALE);
+    private int lifeBarYStart = (int)(15 * Game.SCALE);
+
+    private int healthWidth = lifeBarWidth;
+
+    private int flipX = 0;
+    private int flipW = 1;
+
+    private boolean checkedAttackAlready;
+
+    private PlayGame playGame;
+
+    private int tileY = 0;
+
+    public Player(float x, float y, int width, int height, PlayGame playGame) {
         super(x, y, width, height);        // we take in x and y and pass them over to the Entity class where they are stored
+        this.playGame = playGame;
+        this.state = IDLE;
+
+        this.walkSpeed = 1.0f * Game.SCALE;
+
+        this.maxHealth = 100;
+        this.currentHealth = maxHealth;
+
         loadAnimations();
-        initHitbox(x, y, 12 * Game.SCALE, 28 * Game.SCALE);
+
+        initHitbox((int)(12 * Game.SCALE), (int)(28 * Game.SCALE));
+
+        initAttackBox();
+    }
+
+    public void setSpawnPosition(Point position) {
+        this.x = position.x;
+        this.y = position.y;
+        hitbox.x = x;
+        hitbox.y = y;
+    }
+
+    private void initAttackBox() {
+        attackBox = new Rectangle2D.Float(x, y, (int)(20 * Game.SCALE), (int)(20 * Game.SCALE));
     }
 
     public void update() {
 
+        updateHealthBar();
+
+        // check if player dead?
+        if (currentHealth <= 0) {
+            if (state != DEAD) {
+                state = DEAD;
+                animationTick = 0;
+                animationIndex = 0;
+                playGame.setPlayerDying(true);
+            } else if (animationIndex == getSpriteAmount(DEAD) - 1 && animationTick >= ANIMATION_SPEED - 1) {
+                playGame.setGameOver(true);
+            } else
+                updateAnimationTick();
+
+           return;
+        }
+
+        updateAttackBox();
+
         updatePosition();
+
+        if (isMoving) {
+            checkIfPotionTouched();
+            checkIfSpikesTouched();
+            checkIfFallenOff();
+            tileY = (int)(hitbox.y / Game.TILES_SIZE);
+        }
+
+        if (isAttacking) {
+            checkAttack();
+        }
+
         updateAnimationTick();
         setAnimation();
 
     }
 
-    public void render(Graphics graphics) {
+    private void checkIfFallenOff() {
+        if (hitbox.y >= 620) {
+            hitbox.y = 673;
+            playGame.setGameOver(true);
+        }
+    }
 
-        graphics.drawImage(animations[playerAction][animIndex], (int)(hitbox.x - xDrawOffset), (int)(hitbox.y - yDrawOffset), width, height, null);
-        // drawHitbox(graphics);
+    private void checkIfSpikesTouched() {
+        playGame.checkIfSpikesTouched(this);
+
+    }
+
+    private void checkIfPotionTouched() {
+        playGame.checkIfPotionTouched(hitbox);
+    }
+
+    private void checkAttack() {
+        if (checkedAttackAlready || animationIndex != 4) {
+            return;
+        }
+        checkedAttackAlready = true;
+        playGame.checkIfEnemyHitByPlayer(attackBox);
+        playGame.checkIfObjectHit(attackBox);
+        
+    }
+
+    private void updateAttackBox() {
+
+        if (right) {          // Game.SCALE * 5 is the offset we need
+            attackBox.x = hitbox.x + hitbox.width + (int)(Game.SCALE * 5);
+        } else if (left) {
+            attackBox.x = hitbox.x - hitbox.width - (int)(Game.SCALE * 5);
+        }
+        attackBox.y = hitbox.y + Game.SCALE * 10;
+
+    }
+
+    private void updateHealthBar() {
+
+        healthWidth = (int)((currentHealth / (float)maxHealth) * lifeBarWidth);
+
+    }
+
+    public void render(Graphics graphics, int levelOffset) {
+
+        graphics.drawImage(animations[state][animationIndex],
+                (int)(hitbox.x - xDrawOffset) - levelOffset + flipX,
+                (int)(hitbox.y - yDrawOffset),
+                width * flipW, height, null);   // flipW is -1 when we go to the left so we would flip the image in this case
+        // drawHitbox(graphics, levelOffset);
+
+        // drawAttackBox(graphics, levelOffset);
+
+        drawStatusBar(graphics);
+    }
+
+
+    private void drawStatusBar(Graphics graphics) {
+
+        graphics.setColor(Color.red);
+        graphics.fillRect(lifeBarXStart + statusBarX, lifeBarYStart + statusBarY, healthWidth, lifeBarHeight);
+
+        graphics.drawImage(statusBarImg, statusBarX, statusBarY, statusBarWidth, statusBarHeight, null);
+
     }
 
 
     private void updateAnimationTick() {
 
-        animTick ++;
-        if (animTick >= animSpeed) {
-            animTick = 0;
-            animIndex ++;
-            if (animIndex >= getSpriteAmount(playerAction)) {
-                animIndex = 0;
+        animationTick ++;
+        if (animationTick >= ANIMATION_SPEED) {
+            animationTick = 0;
+            animationIndex ++;
+            if (animationIndex >= getSpriteAmount(state)) {
+                animationIndex = 0;
                 isAttacking = false;
+                checkedAttackAlready = false;
             }
         }
     }
 
     public void setAnimation() {
 
-        int startAnimation = playerAction;
+        int startAnimation = state;
 
         if (isMoving) {
-            playerAction = WALK;
+            state = WALK;
         } else {
-            playerAction = IDLE;
+            state = IDLE;
         }
 
-        if(isInAir) {
+        if (isInAir) {
             if(airSpeed < 0) {   // are we going up?
-                playerAction = JUMP;
+                state = JUMP;
             } else
-                playerAction = FALL;
+                state = FALL;
 
         }
 
         if (isAttacking) {
-            playerAction = PUNCH;
+            switch(attackType) {
+
+                case PUNCH:
+                    state = PUNCH;
+                    break;
+
+                case ROUNDKICK:
+                    state = ROUNDKICK;
+                    break;
+
+                case UPPERCUT:
+                    state = UPPERCUT;
+                    break;
+
+                case SPINKICK:
+                    state = SPINKICK;
+                    break;
+            }
+
+            // Check if the attack animation is new, not already inside the attack cycle
+            // then we start with frame 3 -> faster attack (first frames are idle),
+            // if we wanna change it for a certain attack type (like frame 4 or sth), we have to do so in the cases above
+            if (startAnimation != state) {
+                animationIndex = 3;
+                animationTick = 0;
+                return;
+            }
+
         }
+
         // if we changed the animation -> new animation so we reset animationTick so we start again
-        if (startAnimation != playerAction) {
+        if (startAnimation != state) {
             resetAnimTick();
         }
     }
 
     private void resetAnimTick() {
-        animTick = 0;
-        animIndex = 0;
+        animationTick = 0;
+        animationIndex = 0;
     }
 
     private void updatePosition() {
@@ -109,17 +272,27 @@ public class Player extends Entity {
         }
 
         // if nothing is pressed, then we return, no business of being here
-        if (!left && !right && !isInAir) {
-            return;
+//        if (!left && !right && !isInAir) {
+//            return;
+//        }
+        if (!isInAir) {
+            if ((!left && !right) || (left && right))
+            {
+                return;
+            }
         }
 
         float xSpeed = 0;   // temp var to pass into canMoveHere method (the next position we wanna move to)
 
         if (left) {
-            xSpeed -= playerSpeed;
+            xSpeed -= walkSpeed;
+            flipX = width;
+            flipW = -1;
         }
         if (right) {
-            xSpeed += playerSpeed;
+            xSpeed += walkSpeed;
+            flipX = 0;
+            flipW = 1;
         }
 
         if(!isInAir) {  // we're just going left or right, not in air
@@ -132,7 +305,7 @@ public class Player extends Entity {
 
             if (canMoveHere(hitbox.x, hitbox.y + airSpeed, hitbox.width, hitbox.height, levelData)) {
                 hitbox.y += airSpeed;
-                airSpeed += gravity;
+                airSpeed += GRAVITY;
                 updateXPos(xSpeed);
             } else {        // if we can't move up or down, meaning we hit the roof or floor
                 hitbox.y = getEntityYPosUnderRoofOrAboveFloor(hitbox, airSpeed);
@@ -181,6 +354,27 @@ public class Player extends Entity {
 
     }
 
+    public void updateHealth(int value) {
+        currentHealth += value;
+
+        if (currentHealth <= 0) {
+            currentHealth = 0;
+
+            // gameOver();
+
+        } else if (currentHealth >= maxHealth) {
+            currentHealth = maxHealth;
+        }
+    }
+
+    public void kill() {
+        currentHealth = 0;
+    }
+
+    public void updatePower(int value) {
+        System.out.println("I feel much stronger now!");
+    }
+
     private void loadAnimations() {     // image input is handled with utilz LoadSafe class
 
         BufferedImage img = LoadSave.getSpriteAtlas(LoadSave.PLAYER_ATLAS);
@@ -192,6 +386,8 @@ public class Player extends Entity {
                 animations[y][x] = img.getSubimage(x * 64, y * 64, 64, 64);
             }
         }
+
+        statusBarImg = LoadSave.getSpriteAtlas(LoadSave.STATUS_BAR);
     }
 
     public void loadLevelData(int [][] levelData) {
@@ -203,12 +399,13 @@ public class Player extends Entity {
     public void resetDirBooleans() {
         left = false;
         right = false;
-        up = false;
-        down = false;
+
     }
 
-    public void setAttacking(boolean isAttacking) {
+    public void setAttacking(boolean isAttacking, int attackType) {
         this.isAttacking = isAttacking;
+        this.attackType = attackType;
+
     }
 
     public boolean isLeft() {
@@ -227,25 +424,32 @@ public class Player extends Entity {
         this.right = right;
     }
 
-    public boolean isDown() {
-        return down;
-    }
-
-    public void setDown(boolean down) {
-        this.down = down;
-    }
-
-    public boolean isUp() {
-        return up;
-    }
-
-    public void setUp(boolean up) {
-        this.up = up;
-    }
 
     public void setJump(boolean jump) {
         this.jump = jump;
 
     }
+
+    public void resetAll() {
+        resetDirBooleans();
+        isInAir = false;
+        isAttacking = false;
+        isMoving = false;
+        state = IDLE;
+        currentHealth = maxHealth;
+
+        // player starting position at current level
+        hitbox.x = x;
+        hitbox.y = y;
+
+        if (!isEntityOnFloor(hitbox, levelData)) {
+            isInAir = true;
+        }
+    }
+
+    public int getTileY() {
+        return tileY;
+    }
+
 
 }

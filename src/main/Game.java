@@ -1,7 +1,12 @@
 package main;
 
-import entities.Player;
-import levels.LevelManager;
+
+import gamestates.GameOptions;
+import gamestates.GameState;
+import gamestates.Menu;
+import gamestates.PlayGame;
+import ui.AudioOptions;
+
 
 import java.awt.*;
 
@@ -14,10 +19,13 @@ public class Game implements Runnable
     private GamePanel gamePanel;
     private Thread gameLoop;
     private final int FPS_SET = 120;
-    private final int UPS_SET = 130;        // updates per second
+    private final int UPS_SET = 150;        // updates per second
 
-    private Player player;
-    private LevelManager levelManager;
+    private PlayGame playGame;
+    private Menu menu;
+    private GameOptions gameOptions;
+    private AudioOptions audioOptions;
+
 
     public final static int TILES_DEFAULT_SIZE = 32;
     public final static float SCALE = 1.5f;
@@ -38,6 +46,7 @@ public class Game implements Runnable
         // create gameWindow object inside of Game
         gamePanel = new GamePanel(this);
         gameWindow = new GameWindow(gamePanel);
+        gamePanel.setFocusable(true);
         gamePanel.requestFocus();
 
         startGameLoop();
@@ -45,10 +54,11 @@ public class Game implements Runnable
     }
 
     private void initClasses() {
-        levelManager = new LevelManager(this);
-        player = new Player(200, 200, (int) (64 * SCALE), (int) (64 * SCALE));
-        player.loadLevelData(levelManager.getCurrentLevel().getLevelData());
 
+        audioOptions = new AudioOptions();  // this is created here, so we can use it in pauseScreen and Options but we use same instance
+        menu = new Menu(this);
+        playGame = new PlayGame(this);
+        gameOptions = new GameOptions(this);
     }
 
     private void startGameLoop() {
@@ -57,14 +67,47 @@ public class Game implements Runnable
     }
 
     public void update() {
-        player.update();
-        levelManager.update();
+
+        switch(GameState.state) {
+
+            case PLAYGAME:
+                playGame.update();
+                break;
+
+            case MENU:
+                menu.update();
+                break;
+
+            case OPTIONS:
+                gameOptions.update();
+                break;
+
+            case QUIT:
+            default:
+                System.exit(0);
+                break;
+        }
     }
 
     public void render(Graphics g) {
 
-        levelManager.draw(g);
-        player.render(g);
+        switch(GameState.state) {
+
+            case PLAYGAME:
+                playGame.draw(g);
+                break;
+
+            case MENU:
+                menu.draw(g);
+                break;
+
+            case OPTIONS:
+                gameOptions.draw(g);
+                break;
+
+            default:
+                break;
+        }
 
     }
 
@@ -113,21 +156,34 @@ public class Game implements Runnable
 
             if (System.currentTimeMillis() - lastCheck >= 1000) {
                 lastCheck = System.currentTimeMillis();
-                System.out.printf("FPS: %s | UPS: %s\n", frames, updates);
+                // System.out.printf("FPS: %s | UPS: %s\n", frames, updates);
                 frames = 0;
                 updates = 0;
             }
 
         }
     }
-
     public void windowFocusLost() {
-        player.resetDirBooleans();
+        if (GameState.state == GameState.PLAYGAME) {
+            playGame.getPlayer().resetDirBooleans();
+        }
+
     }
 
-    // getter
-    public Player getPlayer() {
-        return player;
+    public Menu getMenu() {
+        return menu;
+    }
+
+    public PlayGame getPlayGame() {
+        return playGame;
+    }
+
+    public GameOptions getGameOptions() {
+        return gameOptions;
+    }
+
+    public AudioOptions getAudioOptions() {
+        return audioOptions;
     }
 
 
