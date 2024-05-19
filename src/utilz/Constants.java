@@ -88,7 +88,7 @@ public class Constants {
         public static final int GHOST_WIDTH = (int)(GHOST_DEFAULT_WIDTH * Game.SCALE);
         public static final int GHOST_HEIGHT = (int)(GHOST_DEFAULT_HEIGHT * Game.SCALE);
         public static final int GHOST_DRAWOFFSET_X = 10; // the offset here is the difference between the start of the sprite and the start of the hitbox
-        public static final int GHOST_DRAWOFFSET_Y = 13;
+        public static final int GHOST_DRAWOFFSET_Y = 17;
 
 
         public static int getSpriteAmount(int enemyType, int enemyState) {
@@ -111,7 +111,6 @@ public class Constants {
                         case IDLE:
                         case ATTACK:
                         case WALK:
-                        case WASHIT:
                             return 6;
                     }
 

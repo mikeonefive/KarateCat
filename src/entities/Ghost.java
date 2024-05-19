@@ -6,6 +6,7 @@ import java.awt.geom.Rectangle2D;
 
 import static utilz.Constants.Directions.LEFT;
 import static utilz.Constants.EnemyConstants.*;
+import static utilz.HelpMethods.*;
 
 
 public class Ghost extends Enemy {
@@ -79,6 +80,7 @@ public class Ghost extends Enemy {
                         checkIfPlayerWasHit(attackBox, player);
                     }
                     break;
+
                 case WASHIT:
                     break;
             }
@@ -86,6 +88,27 @@ public class Ghost extends Enemy {
 
     }
 
+    // ghost is able to move differently than other enemies (no floor check)
+    @Override
+    protected void move(int[][] levelData) {
+        float xSpeed;
+
+        if (walkDir == LEFT) {
+            xSpeed = -walkSpeed;
+        } else {
+            xSpeed = walkSpeed;
+        }
+
+        // Ghost doesn't need the floor check so it can also move when there's no floor
+        if(canMoveHere(hitbox.x + xSpeed, hitbox.y, hitbox.width, hitbox.height, levelData)) {
+            // if(isFloor(hitbox, xSpeed, levelData)) {
+                hitbox.x += xSpeed;
+                return;
+            // }
+        }
+
+        changeWalkingDir();
+    }
 
     public int flipX() {
 

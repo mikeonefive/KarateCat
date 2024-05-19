@@ -86,7 +86,7 @@ public class EnemyManager {
             if (ghost.isAlive()) {
 
                 // ghost.drawHitbox(g, xLevelOffset);
-                g.drawImage(ghostArray[ghost.getState()][ghost.getAnimationIndex()],
+                g.drawImage(ghostArray[0][ghost.getAnimationIndex()],
                         (int) ghost.getHitbox().x - xLevelOffset - GHOST_DRAWOFFSET_X + ghost.flipX(),
                         (int) ghost.getHitbox().y - GHOST_DRAWOFFSET_Y,
                         GHOST_WIDTH * ghost.flipWidth(), GHOST_HEIGHT, null);
@@ -124,7 +124,7 @@ public class EnemyManager {
         }
 
         // Ghosts
-        ghostArray = new BufferedImage[4][6];
+        ghostArray = new BufferedImage[1][6];
         BufferedImage tempGhost = LoadSave.getSpriteAtlas(LoadSave.GHOST_SPRITES);
         for (int y = 0; y < ghostArray.length; y++) {
             for (int x = 0; x < ghostArray[y].length; x++) {
