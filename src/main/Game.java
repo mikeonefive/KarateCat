@@ -186,5 +186,7 @@ public class Game implements Runnable
         return audioOptions;
     }
 
-
+    public GamePanel getGamePanel() {
+        return gamePanel;
+    }
 }

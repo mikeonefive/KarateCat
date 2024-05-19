@@ -115,6 +115,11 @@ public class GameOptions extends State implements StateMethods {
     }
 
     @Override
+    public void handleGamepadInput() {
+
+    }
+
+    @Override
     public void mouseClicked(MouseEvent e) {
 
     }

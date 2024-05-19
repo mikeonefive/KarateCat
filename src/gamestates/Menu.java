@@ -1,5 +1,6 @@
 package gamestates;
 
+import inputs.GamepadInput;
 import main.Game;
 import ui.MenuButton;
 import utilz.LoadSave;
@@ -9,17 +10,20 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
+
 public class Menu extends State implements StateMethods {
 
     private MenuButton[] buttons = new MenuButton[3];
     private BufferedImage backgroundBoard, backgroundImage;
     private int menuX, menuY, menuWidth, menuHeight;
+    private GamepadInput gamepadInput;
 
 
     public Menu(Game game) {
         super(game);
         loadBackground();
         loadButtons();
+        gamepadInput = new GamepadInput(game.getGamePanel());
 
     }
 
@@ -42,6 +46,8 @@ public class Menu extends State implements StateMethods {
 
     @Override
     public void update() {
+
+        handleGamepadInput();
 
         for (MenuButton menuButton : buttons) {
             menuButton.update();
@@ -124,6 +130,12 @@ public class Menu extends State implements StateMethods {
 
     @Override
     public void keyReleased(KeyEvent e) {
+
+    }
+
+    @Override
+    public void handleGamepadInput() {
+
 
     }
 }

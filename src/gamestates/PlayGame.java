@@ -1,7 +1,9 @@
 package gamestates;
 
+import com.studiohartman.jamepad.ControllerState;
 import entities.EnemyManager;
 import entities.Player;
+import inputs.GamepadInput;
 import levels.LevelManager;
 import main.Game;
 import objects.ObjectManager;
@@ -46,6 +48,8 @@ public class PlayGame extends State implements StateMethods {     // in here we 
     private boolean isLevelComplete = false;
 
     private boolean isPlayerDying;
+
+    public GamepadInput gamepadInput;
 
 
     public PlayGame(Game game) {
@@ -96,6 +100,9 @@ public class PlayGame extends State implements StateMethods {     // in here we 
         pauseOverlay = new PauseOverlay(this);
 
         levelCompleteOverlay = new LevelCompleteOverlay(this);
+
+        gamepadInput = new GamepadInput(game.getGamePanel());
+
     }
 
     @Override
@@ -119,6 +126,7 @@ public class PlayGame extends State implements StateMethods {     // in here we 
             player.update();
             enemyManager.update(levelManager.getCurrentLevel().getLvlData(), player);
             checkCloseToBorder();
+            handleGamepadInput();
         }
     }
 
@@ -324,7 +332,6 @@ public class PlayGame extends State implements StateMethods {     // in here we 
                     break;
             }
         }
-
     }
 
     @Override
@@ -353,6 +360,37 @@ public class PlayGame extends State implements StateMethods {     // in here we 
 
         }
     }
+
+    @Override
+    public void handleGamepadInput() {
+
+        ControllerState currState = gamepadInput.getControllers().getState(0);
+
+        player.setJump(false);
+        player.resetDirBooleans();
+
+        // buttons
+        if (currState.b)
+            player.setAttacking(true, ROUNDKICK);
+        else if (currState.y)
+            player.setAttacking(true, SPINKICK);
+        else if (currState.x)
+            player.setAttacking(true, PUNCH);
+        else if (currState.a)
+            player.setAttacking(true, UPPERCUT);
+
+        // jump
+        else if (currState.rb)
+            player.setJump(true);
+
+        // directions
+        if (currState.dpadRight || currState.leftStickX > 0.5)
+            player.setRight(true);
+        if (currState.dpadLeft || currState.leftStickX < -0.5)
+            player.setLeft(true);
+
+    }
+
 
     public void resumeGame() {
         isGamePaused = false;

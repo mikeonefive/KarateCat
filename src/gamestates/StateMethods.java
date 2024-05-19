@@ -25,4 +25,6 @@ public interface StateMethods {
 
     public void keyReleased(KeyEvent e);
 
+    public void handleGamepadInput();
+
 }
