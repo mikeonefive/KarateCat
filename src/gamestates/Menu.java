@@ -1,5 +1,6 @@
 package gamestates;
 
+import com.studiohartman.jamepad.ControllerState;
 import inputs.GamepadInput;
 import main.Game;
 import ui.MenuButton;
@@ -13,17 +14,24 @@ import java.awt.image.BufferedImage;
 
 public class Menu extends State implements StateMethods {
 
-    private MenuButton[] buttons = new MenuButton[3];
+    private final MenuButton[] buttons = new MenuButton[3];
     private BufferedImage backgroundBoard, backgroundImage;
     private int menuX, menuY, menuWidth, menuHeight;
-    private GamepadInput gamepadInput;
+    private final GamepadInput gamepadInput;
+    private int currentButtonIndex = 0;  // Track the currently selected button
+
+    // Cooldown for gamepad input to avoid choppy navigation
+    private long lastInputTime;
+    private final long inputCooldown = 200; // 200 milliseconds cooldown
 
 
-    public Menu(Game game) {
+    public Menu(Game game, GamepadInput gamepadInput) {
         super(game);
         loadBackground();
         loadButtons();
-        gamepadInput = new GamepadInput(game.getGamePanel());
+
+        this.gamepadInput = gamepadInput;
+        lastInputTime = System.currentTimeMillis(); // this is for the gamepad so it doesn't update the button state too fast
 
     }
 
@@ -40,6 +48,7 @@ public class Menu extends State implements StateMethods {
 
     private void loadButtons() {
         buttons[0] = new MenuButton((int)(Game.GAME_WIDTH / 2), (int) (205 * Game.SCALE), 0, GameState.PLAYGAME);
+        buttons[0].setMouseOver(true); // this is for the gamepad input default selection at the start
         buttons[1] = new MenuButton((int)(Game.GAME_WIDTH / 2), (int) (230 * Game.SCALE), 1, GameState.OPTIONS);
         buttons[2] = new MenuButton((int)(Game.GAME_WIDTH / 2), (int) (255 * Game.SCALE), 2, GameState.QUIT);
     }
@@ -53,6 +62,37 @@ public class Menu extends State implements StateMethods {
             menuButton.update();
         }
 
+    }
+
+    @Override
+    public void handleGamepadInput() {
+
+        ControllerState buttonPressed = gamepadInput.getButtonPressed();
+        long currentTime = System.currentTimeMillis();
+
+
+        if (currentTime - lastInputTime >= inputCooldown) {
+            if (buttonPressed.dpadDown) {
+                currentButtonIndex = (currentButtonIndex + 1) % buttons.length;
+                updateButtonSelection();
+                lastInputTime = currentTime;
+            } else if (buttonPressed.dpadUp) {
+                currentButtonIndex = (currentButtonIndex - 1 + buttons.length) % buttons.length;
+                updateButtonSelection();
+                lastInputTime = currentTime;
+            } else if (buttonPressed.a) {
+                buttons[currentButtonIndex].applyGameState();
+                lastInputTime = currentTime;
+            }
+        }
+
+
+    }
+
+    private void updateButtonSelection() {
+        for (int i = 0; i < buttons.length; i++) {
+            buttons[i].setMouseOver(i == currentButtonIndex);
+        }
     }
 
     @Override
@@ -133,9 +173,4 @@ public class Menu extends State implements StateMethods {
 
     }
 
-    @Override
-    public void handleGamepadInput() {
-
-
-    }
 }

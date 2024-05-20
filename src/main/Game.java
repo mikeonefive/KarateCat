@@ -5,6 +5,7 @@ import gamestates.GameOptions;
 import gamestates.GameState;
 import gamestates.Menu;
 import gamestates.PlayGame;
+import inputs.GamepadInput;
 import ui.AudioOptions;
 
 
@@ -25,6 +26,7 @@ public class Game implements Runnable
     private Menu menu;
     private GameOptions gameOptions;
     private AudioOptions audioOptions;
+    private GamepadInput gamepadInput;
 
 
     public final static int TILES_DEFAULT_SIZE = 32;
@@ -55,10 +57,15 @@ public class Game implements Runnable
 
     private void initClasses() {
 
+        gamepadInput = new GamepadInput(gamePanel);  // Initialize once and share
+
         audioOptions = new AudioOptions();  // this is created here, so we can use it in pauseScreen and Options but we use same instance
-        menu = new Menu(this);
-        playGame = new PlayGame(this);
-        gameOptions = new GameOptions(this);
+
+        menu = new Menu(this, gamepadInput);
+        playGame = new PlayGame(this, gamepadInput);
+        gameOptions = new GameOptions(this, gamepadInput);
+
+
     }
 
     private void startGameLoop() {
@@ -84,6 +91,7 @@ public class Game implements Runnable
 
             case QUIT:
             default:
+                cleanup();
                 System.exit(0);
                 break;
         }
@@ -160,14 +168,20 @@ public class Game implements Runnable
                 frames = 0;
                 updates = 0;
             }
-
         }
+
     }
     public void windowFocusLost() {
         if (GameState.state == GameState.PLAYGAME) {
             playGame.getPlayer().resetDirBooleans();
         }
 
+    }
+
+    public void cleanup() {
+        if (this.getPlayGame() != null && this.getPlayGame().gamepadInput != null) {
+            this.getPlayGame().gamepadInput.getControllers().quitSDLGamepad();
+        }
     }
 
     public Menu getMenu() {

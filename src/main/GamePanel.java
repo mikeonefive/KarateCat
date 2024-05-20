@@ -19,7 +19,6 @@ public class GamePanel extends JPanel
 
     private MouseInput mouseInput;
 
-    private GamepadInput gamepadInput;
 
     public GamePanel(Game game)
     {
@@ -32,7 +31,6 @@ public class GamePanel extends JPanel
         addMouseListener(mouseInput);
         addMouseMotionListener(mouseInput);
 
-        gamepadInput = new GamepadInput(this);
 
     }
 
@@ -65,7 +63,4 @@ public class GamePanel extends JPanel
         return game;
     }
 
-    public GamepadInput getGamepadInput() {
-        return gamepadInput;
-    }
 }

@@ -29,7 +29,7 @@ public class Player extends Entity {
     private float yDrawOffset = 25 * Game.SCALE;
 
     // jumping/gravity
-    private float jumpSpeed = -2.50f * Game.SCALE;
+    private float jumpSpeed = -3.10f * Game.SCALE; // jumps pretty high now, was -2.25f
     private float fallSpeedAfterCollision = 0.5f * Game.SCALE;
 
 
