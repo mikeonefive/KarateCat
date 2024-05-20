@@ -1,5 +1,6 @@
 package entities;
 
+import audio.AudioPlayer;
 import gamestates.PlayGame;
 import main.Game;
 import utilz.LoadSave;
@@ -29,7 +30,7 @@ public class Player extends Entity {
     private float yDrawOffset = 25 * Game.SCALE;
 
     // jumping/gravity
-    private float jumpSpeed = -3.10f * Game.SCALE; // jumps pretty high now, was -2.25f
+    private float jumpSpeed = -3.10f * Game.SCALE; // jumps pretty high now, was -2.75f
     private float fallSpeedAfterCollision = 0.5f * Game.SCALE;
 
 
@@ -95,8 +96,11 @@ public class Player extends Entity {
                 animationTick = 0;
                 animationIndex = 0;
                 playGame.setPlayerDying(true);
+                playGame.getGame().getAudioPlayer().playSoundEffect(AudioPlayer.DIE);
             } else if (animationIndex == getSpriteAmount(DEAD) - 1 && animationTick >= ANIMATION_SPEED - 1) {
                 playGame.setGameOver(true);
+                playGame.getGame().getAudioPlayer().stopSong();
+                playGame.getGame().getAudioPlayer().playSoundEffect(AudioPlayer.GAMEOVER);
             } else
                 updateAnimationTick();
 
@@ -126,7 +130,11 @@ public class Player extends Entity {
     private void checkIfFallenOff() {
         if (hitbox.y >= 620) {
             hitbox.y = 673;
+
+            playGame.getGame().getAudioPlayer().playSoundEffect(AudioPlayer.DIE);
             playGame.setGameOver(true);
+            playGame.getGame().getAudioPlayer().stopSong();
+            playGame.getGame().getAudioPlayer().playSoundEffect(AudioPlayer.GAMEOVER);
         }
     }
 
@@ -146,6 +154,7 @@ public class Player extends Entity {
         checkedAttackAlready = true;
         playGame.checkIfEnemyHitByPlayer(attackBox);
         playGame.checkIfObjectHit(attackBox);
+        playGame.getGame().getAudioPlayer().playRandomAttackSFX();
         
     }
 
@@ -335,6 +344,7 @@ public class Player extends Entity {
         if(isInAir) { // if already in air, don't jump again, return
             return;
         }
+        playGame.getGame().getAudioPlayer().playSoundEffect(AudioPlayer.JUMP);
         isInAir = true;
         airSpeed = jumpSpeed;
     }

@@ -56,10 +56,10 @@ public class GameOverScreen {
     }
 
     public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-            playingGame.resetAll();
-            GameState.state = GameState.MENU;
-        }
+//        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+//            playingGame.resetAll();
+//            GameState.state = GameState.MENU;
+//        }
     }
 
     public void update() {
@@ -92,11 +92,12 @@ public class GameOverScreen {
 
             if (backToMenu.isMousePressed()) {
                 playingGame.resetAll();
-                GameState.state = GameState.MENU;
+                playingGame.setGameState(GameState.MENU);
             }
         } else if (isIn(tryAgain, e)) {
             if (tryAgain.isMousePressed()) {
                 playingGame.resetAll();
+                playingGame.getGame().getAudioPlayer().setSongForLevel(playingGame.getLevelManager().getLevelIndex());
             }
         }
 

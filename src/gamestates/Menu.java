@@ -83,6 +83,10 @@ public class Menu extends State implements StateMethods {
             } else if (buttonPressed.a) {
                 buttons[currentButtonIndex].applyGameState();
                 lastInputTime = currentTime;
+                // change song for the new level
+                if (buttons[currentButtonIndex].getState() == GameState.PLAYGAME)
+                    game.getAudioPlayer().setSongForLevel(game.getPlayGame().getLevelManager().getLevelIndex());
+
             }
         }
 
@@ -126,10 +130,12 @@ public class Menu extends State implements StateMethods {
     public void mouseReleased(MouseEvent e) {
         for (MenuButton menuButton : buttons) {
             if (isInsideButton(e, menuButton)) {
-                if (menuButton.isMousePressed()) {
+                if (menuButton.isMousePressed())
                     menuButton.applyGameState();
-                    break;
-                }
+                if (menuButton.getState() == GameState.PLAYGAME)
+                    game.getAudioPlayer().setSongForLevel(game.getPlayGame().getLevelManager().getLevelIndex());
+                break;
+
             }
         }
 

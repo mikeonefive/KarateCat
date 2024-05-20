@@ -1,6 +1,7 @@
 package main;
 
 
+import audio.AudioPlayer;
 import gamestates.GameOptions;
 import gamestates.GameState;
 import gamestates.Menu;
@@ -25,10 +26,13 @@ public class Game implements Runnable
     private PlayGame playGame;
     private Menu menu;
     private GameOptions gameOptions;
-    private AudioOptions audioOptions;
+
     private GamepadInput gamepadInput;
 
+    private AudioOptions audioOptions;
+    private AudioPlayer audioPlayer;
 
+    // constants for tiles and scaling
     public final static int TILES_DEFAULT_SIZE = 32;
     public final static float SCALE = 1.5f;
     public final static int TILES_IN_WIDTH = 26;
@@ -59,7 +63,8 @@ public class Game implements Runnable
 
         gamepadInput = new GamepadInput(gamePanel);  // Initialize once and share
 
-        audioOptions = new AudioOptions();  // this is created here, so we can use it in pauseScreen and Options but we use same instance
+        audioOptions = new AudioOptions(this);  // this is created here, so we can use it in pauseScreen and Options but we use same instance
+        audioPlayer = new AudioPlayer();
 
         menu = new Menu(this, gamepadInput);
         playGame = new PlayGame(this, gamepadInput);
@@ -200,7 +205,8 @@ public class Game implements Runnable
         return audioOptions;
     }
 
-    public GamePanel getGamePanel() {
-        return gamePanel;
+    public AudioPlayer getAudioPlayer() {
+        return audioPlayer;
     }
+
 }

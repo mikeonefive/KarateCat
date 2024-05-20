@@ -9,7 +9,6 @@ public class GamepadInput {
     private ControllerManager controllers;
     private GamePanel gamePanel;
 
-
     public GamepadInput(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
         controllers = new ControllerManager();

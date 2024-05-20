@@ -125,7 +125,7 @@ public class Constants {
                     return 10;
 
                 case GHOST:
-                    return 15;
+                    return 100;
 
                 default:
                     return 1;
