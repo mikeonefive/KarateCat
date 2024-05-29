@@ -95,11 +95,13 @@ public class EnemyManager {
     }
 
 
+
     public void checkIfEnemyWasHit(Rectangle2D.Float attackBox) {
         for (Monster monster : monsters) {
             if (monster.isAlive()) {
 
                 if (attackBox.intersects(monster.getHitbox())) {
+                    // System.out.println("aaaahhhhhh");
                     monster.receiveDamage(10);
                     return;
                 }

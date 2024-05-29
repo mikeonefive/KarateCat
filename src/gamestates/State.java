@@ -10,6 +10,7 @@ public class State {
 
 
     protected Game game;
+    protected static boolean ignoreAPress = false;
 
     public State(Game game) {
         this.game = game;
@@ -23,14 +24,19 @@ public class State {
         return game;
     }
 
-    public void setGameState(GameState state) {
+    public void setGameState(GameState newState) {
 
-        switch(state) {
+        switch(newState) {
             case MENU -> game.getAudioPlayer().playSong(AudioPlayer.MAIN_MENU);
             case PLAYGAME -> game.getAudioPlayer().setSongForLevel(game.getPlayGame().getLevelManager().getLevelIndex());
         }
+        System.out.println("Setting game state to: " + newState);
+        GameState.state = newState;
+        System.out.println("Current game state after setting: " + GameState.state);
 
-        GameState.state = state;
+
 
     }
+
+
 }

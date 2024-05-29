@@ -41,6 +41,7 @@ public class GameOptions extends State implements StateMethods {
         int menuY = (int)(235 * Game.SCALE);
         menuButton = new RsmButton(menuX, menuY, RSM_WIDTH, RSM_HEIGHT, 2);
         menuButton.setName("menu");
+        menuButton.setMouseOver(true);
     }
 
     private void loadImages() {
@@ -134,7 +135,7 @@ public class GameOptions extends State implements StateMethods {
 
         if (currentTime - lastInputTime >= inputCooldown) {
 
-            if (buttonPressed.start) {
+            if (buttonPressed.back) {
                 GameState.state = GameState.MENU;
                 lastInputTime = currentTime;
             }

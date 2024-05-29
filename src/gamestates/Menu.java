@@ -80,15 +80,25 @@ public class Menu extends State implements StateMethods {
                 currentButtonIndex = (currentButtonIndex - 1 + buttons.length) % buttons.length;
                 updateButtonSelection();
                 lastInputTime = currentTime;
-            } else if (buttonPressed.a) {
+            }
+
+            if (buttonPressed.a) {
+                // PROBLEM!!! with the A button is here because we change to the
+                // play state right away (menu is only there for some millisecs)
                 buttons[currentButtonIndex].applyGameState();
                 lastInputTime = currentTime;
+
                 // change song for the new level
                 if (buttons[currentButtonIndex].getState() == GameState.PLAYGAME)
                     game.getAudioPlayer().setSongForLevel(game.getPlayGame().getLevelManager().getLevelIndex());
 
             }
+
+
+
         }
+
+
 
 
     }

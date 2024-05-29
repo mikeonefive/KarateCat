@@ -8,6 +8,8 @@ import static utilz.Constants.*;
 import static utilz.Constants.EnemyConstants.*;
 import static utilz.Constants.Directions.*;
 
+import static utilz.Constants.PlayerConstants.GETTINGHIT;
+
 import static utilz.HelpMethods.*;
 
 
@@ -134,7 +136,10 @@ public abstract class Enemy extends Entity {
 
     protected void checkIfPlayerWasHit(Rectangle2D.Float attackBox, Player player) {
         if (attackBox.intersects(player.hitbox)) {
+
             player.updateHealth(-getDamageInflictedByEnemy(enemyType));
+            player.justGotHit();
+
         }
         checkedAttackAlready = true;
     }

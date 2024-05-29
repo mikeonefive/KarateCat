@@ -1,7 +1,9 @@
 package ui;
 
+import com.studiohartman.jamepad.ControllerState;
 import gamestates.GameState;
 import gamestates.PlayGame;
+import inputs.GamepadInput;
 import main.Game;
 import utilz.LoadSave;
 
@@ -19,10 +21,23 @@ public class GameOverScreen {
     private int imgX, imgY, imgWidth, imgHeight;
     private GameOverButton backToMenu, tryAgain;
 
-    public GameOverScreen(PlayGame playingGame) {
+    // Gamepad input
+    private final GamepadInput gamepadInput;
+    // Cooldown for gamepad input to avoid choppy navigation
+    private long lastInputTime;
+    private final long inputCooldown = 200;
+
+
+    public GameOverScreen(PlayGame playingGame, GamepadInput gamepadInput) {
+
         this.playingGame = playingGame;
+        this.gamepadInput = gamepadInput;
+
         createImage();
         createButtons();
+
+        lastInputTime = System.currentTimeMillis();
+
     }
 
     private void createButtons() {
@@ -31,6 +46,10 @@ public class GameOverScreen {
         int y = (int) (235 * Game.SCALE);
         tryAgain = new GameOverButton(tryAgainX, y, GAMEOVER_WIDTH, GAMEOVER_HEIGHT, 0);
         backToMenu = new GameOverButton(menuX, y, GAMEOVER_WIDTH, GAMEOVER_HEIGHT, 1);
+
+        tryAgain.setMouseOver(true); // default highlighted button
+
+
     }
 
     private void createImage() {
@@ -65,13 +84,14 @@ public class GameOverScreen {
     public void update() {
         backToMenu.update();
         tryAgain.update();
+        handleGamepadInput();
     }
 
     private boolean isIn(GameOverButton button, MouseEvent event) {
         return button.getBoundaries().contains(event.getX(), event.getY());
     }
 
-    // hover effect doesn't work but buttons are ok otherwise!!!
+
     public void mouseMoved(MouseEvent e) {
 
         tryAgain.setMouseOver(false);
@@ -81,7 +101,6 @@ public class GameOverScreen {
         if (isIn(backToMenu, e)) {
             backToMenu.setMouseOver(true);
         } else if (isIn(tryAgain, e)) {
-            // this here works, we setMouseOver to true
             tryAgain.setMouseOver(true);
         }
 
@@ -111,6 +130,39 @@ public class GameOverScreen {
         } else if (isIn(tryAgain, e)) {
             tryAgain.setMousePressed(true);
         }
+    }
+
+    public void handleGamepadInput() {
+
+        ControllerState buttonPressed = gamepadInput.getButtonPressed();
+        long currentTime = System.currentTimeMillis();
+
+
+        if (currentTime - lastInputTime >= inputCooldown) {
+            if (buttonPressed.dpadLeft && backToMenu.isMouseOver() || buttonPressed.dpadRight && backToMenu.isMouseOver()) {
+                tryAgain.setMouseOver(true);
+                backToMenu.setMouseOver(false);
+                lastInputTime = currentTime;
+
+            } else if (buttonPressed.dpadLeft && tryAgain.isMouseOver() || buttonPressed.dpadRight && tryAgain.isMouseOver()) {
+                backToMenu.setMouseOver(true);
+                tryAgain.setMouseOver(false);
+                lastInputTime = currentTime;
+            }
+
+
+            if ((buttonPressed.a || buttonPressed.b) && tryAgain.isMouseOver()) {
+                playingGame.resetAll();
+                playingGame.getGame().getAudioPlayer().setSongForLevel(playingGame.getLevelManager().getLevelIndex());
+            }
+
+            else if ((buttonPressed.a || buttonPressed.b) && backToMenu.isMouseOver()) {
+                playingGame.resetAll();
+                playingGame.setGameState(GameState.MENU);
+
+            }
+        }
+
     }
 
 }

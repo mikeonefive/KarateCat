@@ -5,5 +5,6 @@ public enum GameState { // special "class" represents a group of constants (unch
 
     PLAYGAME, MENU, OPTIONS, QUIT;         // constants for game states
 
+    // first game state that's called is MENU
     public static GameState state = MENU;
 }

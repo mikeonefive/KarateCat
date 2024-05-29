@@ -18,8 +18,8 @@ public class AudioPlayer {
     public static int ROUNDKICK = 4;
     public static int SPINKICK = 5;
 
-    public static int LEVEL_COMPLETE = 6;
-    public static int GAMEOVER = 7;
+    public static int LEVEL_COMPLETE = 7;
+    public static int GAMEOVER = 8;
 
     private Clip[] songs, sfx;
     private int currentSongID;
@@ -50,7 +50,7 @@ public class AudioPlayer {
 
     private void loadSoundEffects() {
 
-        String[] names = {"die", "jump", "punch", "uppercut", "roundkick", "spinkick", "levelcomplete", "gameover"};
+        String[] names = {"die", "jump", "punch", "addpunch", "uppercut", "roundkick", "spinkick", "levelcomplete", "gameover"};
         sfx = new Clip[names.length];
 
         for (int i = 0; i < sfx.length; i++) {
@@ -112,6 +112,12 @@ public class AudioPlayer {
     public void playSoundEffect(int effect) {
         sfx[effect].setMicrosecondPosition(0); // reset position to start from beginning of sound effect
         sfx[effect].start();
+    }
+
+    public void stopSoundEffects() {
+        for (Clip sound : sfx) {
+            sound.stop();
+        }
     }
 
     public void playSong(int song) {

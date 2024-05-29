@@ -60,6 +60,10 @@ public abstract class Entity {      // you can't create an object of an abstract
         return state;
     }
 
+    public void setState(int state) {
+        this.state = state;
+    }
+
     public int getAnimationIndex() {
         return animationIndex;
     }

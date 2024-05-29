@@ -99,11 +99,11 @@ public class PlayGame extends State implements StateMethods {     // in here we 
 
         player.setSpawnPosition(levelManager.getCurrentLevel().getPlayerSpawnCoordinates());
 
-        gameOverScreen = new GameOverScreen(this);
+        gameOverScreen = new GameOverScreen(this, gamepadInput);
 
-        pauseOverlay = new PauseOverlay(this);
+        pauseOverlay = new PauseOverlay(this, gamepadInput);
 
-        levelCompleteOverlay = new LevelCompleteOverlay(this);
+        levelCompleteOverlay = new LevelCompleteOverlay(this, gamepadInput);
 
     }
 
@@ -225,6 +225,9 @@ public class PlayGame extends State implements StateMethods {     // in here we 
         player.resetAll();
         enemyManager.resetAllEnemies();
         objectManager.resetAllObjects();
+        // this is mainly so the death march (sound effect not a song) doesn't continue playing even though we've already started the level
+        game.getAudioPlayer().stopSoundEffects();
+
         
     }
 
@@ -252,11 +255,12 @@ public class PlayGame extends State implements StateMethods {     // in here we 
     @Override
     public void mouseClicked(MouseEvent e) {
 
-//        if (!isGameOver) {
-//            if (e.getButton() == MouseEvent.BUTTON1) {
-//                player.setAttacking(true, SPINKICK);
-//            }
-//        }
+        if (!isGameOver) {
+            if (e.getButton() == MouseEvent.BUTTON1) {
+                player.setAttacking(true, DOWNKICK);
+            } else if(e.getButton() == MouseEvent.BUTTON3)
+				    player.setPowerAttack();
+        }
 
     }
 
@@ -346,7 +350,7 @@ public class PlayGame extends State implements StateMethods {     // in here we 
                     player.setAttacking(true, ROUNDKICK);
                     break;
                 case KeyEvent.VK_O:
-                    player.setAttacking(true, SPINKICK);
+                    player.setAttacking(true, DOWNKICK);
                     break;
 
 
@@ -403,16 +407,20 @@ public class PlayGame extends State implements StateMethods {     // in here we 
         isGamepadLeft = false;
         isGamepadRight = false;
 
-
         // buttons
         if (button.b)
             player.setAttacking(true, ROUNDKICK);
         else if (button.y)
-            player.setAttacking(true, SPINKICK);
+            player.setAttacking(true, DOWNKICK);
         else if (button.x)
             player.setAttacking(true, PUNCH);
         else if (button.a)
             player.setAttacking(true, UPPERCUT);
+
+        else if (button.rightStickClick) {
+            player.setPowerAttack();
+        }
+
 
         // jump
         else if (button.rb)
@@ -428,7 +436,7 @@ public class PlayGame extends State implements StateMethods {     // in here we 
 
         // go to pause if start button was pressed
         if (button.start)
-            GameState.state = GameState.OPTIONS;
+            isGamePaused = !isGamePaused;
 
     }
 
