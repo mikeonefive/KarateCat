@@ -125,7 +125,7 @@ public class Constants {
                     return 10;
 
                 case GHOST:
-                    return 15;
+                    return 100;
 
                 default:
                     return 1;
@@ -213,11 +213,12 @@ public class Constants {
         public static final int IDLE = 0;
         public static final int WALK = 1;
         public static final int JUMP = 2;
-        public static final int SPINKICK = 3;
+        public static final int DOWNKICK = 12;
         public static final int DEAD = 4;
         public static final int GETTINGHIT = 5;
         public static final int FALL = 6;
         public static final int PUNCH = 9;
+        public static final int POWERATTACK = 3;
         public static final int ROUNDKICK = 14;
         public static final int UPPERCUT = 15;
 
@@ -230,12 +231,14 @@ public class Constants {
                 case WALK:
                 case JUMP:
                 case ROUNDKICK:
-                case SPINKICK:
+                case DOWNKICK:
+                case POWERATTACK:
                     return 8;
 
                 case IDLE:
-                case GETTINGHIT:
                     return 4;
+                case GETTINGHIT:
+                    return 3;
 
                 case UPPERCUT:
                     return 6;

@@ -12,6 +12,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import static utilz.Constants.ObjectConstants.*;
+import static utilz.Constants.PlayerConstants.GETTINGHIT;
 import static utilz.Constants.Projectiles.*;
 import static utilz.HelpMethods.canCannonSeePlayer;
 import static utilz.HelpMethods.isProjectileHittingLevelBorder;
@@ -149,6 +150,7 @@ public class ObjectManager {
 
                 // is projectile the hitting the player?
                 if (p.getHitbox().intersects(player.getHitbox())) {
+                    player.justGotHit();
                     player.updateHealth(-20);
                     p.setIsActive(false);
                 }

@@ -76,7 +76,7 @@ public class Ghost extends Enemy {
                         checkedAttackAlready = false;
                     }
 
-                    if (animationIndex == 3 && !checkedAttackAlready) {
+                    if (animationIndex != 0 && !checkedAttackAlready) {
                         checkIfPlayerWasHit(attackBox, player);
                     }
                     break;

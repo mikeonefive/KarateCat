@@ -1,5 +1,7 @@
 package gamestates;
 
+import com.studiohartman.jamepad.ControllerState;
+import inputs.GamepadInput;
 import main.Game;
 import ui.AudioOptions;
 import ui.PauseButton;
@@ -15,13 +17,20 @@ import static utilz.Constants.UI.RSMButtons.*;
 
 public class GameOptions extends State implements StateMethods {
 
+    // gamepad & cooldown for gamepad
+    private GamepadInput gamepadInput;
+    private long lastInputTime;
+    private final long inputCooldown = 200; // 200 milliseconds cooldown
+
+
     private AudioOptions audioOptions;
     private BufferedImage backgroundImage, optionsBackgroundImage;
     private int bgX, bgY, bgWidth, bgHeight;
     private RsmButton menuButton;
 
-    public GameOptions(Game game) {
+    public GameOptions(Game game, GamepadInput gamepadInput) {
         super(game);
+        this.gamepadInput = gamepadInput;
         loadImages();
         loadButton();
         audioOptions = game.getAudioOptions();
@@ -32,6 +41,7 @@ public class GameOptions extends State implements StateMethods {
         int menuY = (int)(235 * Game.SCALE);
         menuButton = new RsmButton(menuX, menuY, RSM_WIDTH, RSM_HEIGHT, 2);
         menuButton.setName("menu");
+        menuButton.setMouseOver(true);
     }
 
     private void loadImages() {
@@ -48,6 +58,8 @@ public class GameOptions extends State implements StateMethods {
 
         menuButton.update();
         audioOptions.update();
+
+        handleGamepadInput();
     }
 
     @Override
@@ -111,6 +123,24 @@ public class GameOptions extends State implements StateMethods {
 
     @Override
     public void keyReleased(KeyEvent e) {
+
+    }
+
+    @Override
+    public void handleGamepadInput() {
+
+        ControllerState buttonPressed = gamepadInput.getButtonPressed();
+        long currentTime = System.currentTimeMillis();
+
+
+        if (currentTime - lastInputTime >= inputCooldown) {
+
+            if (buttonPressed.back) {
+                GameState.state = GameState.MENU;
+                lastInputTime = currentTime;
+            }
+
+        }
 
     }
 

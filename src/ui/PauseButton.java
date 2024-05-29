@@ -1,5 +1,7 @@
 package ui;
 
+import gamestates.GameState;
+
 import java.awt.*;
 
 public class PauseButton {
@@ -61,4 +63,6 @@ public class PauseButton {
     public void setBoundaries(Rectangle boundaries) {
         this.boundaries = boundaries;
     }
+
+
 }

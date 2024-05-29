@@ -1,10 +1,12 @@
 package main;
 
 
+import audio.AudioPlayer;
 import gamestates.GameOptions;
 import gamestates.GameState;
 import gamestates.Menu;
 import gamestates.PlayGame;
+import inputs.GamepadInput;
 import ui.AudioOptions;
 
 
@@ -24,9 +26,13 @@ public class Game implements Runnable
     private PlayGame playGame;
     private Menu menu;
     private GameOptions gameOptions;
+
+    private GamepadInput gamepadInput;
+
     private AudioOptions audioOptions;
+    private AudioPlayer audioPlayer;
 
-
+    // constants for tiles and scaling
     public final static int TILES_DEFAULT_SIZE = 32;
     public final static float SCALE = 1.5f;
     public final static int TILES_IN_WIDTH = 26;
@@ -55,10 +61,16 @@ public class Game implements Runnable
 
     private void initClasses() {
 
-        audioOptions = new AudioOptions();  // this is created here, so we can use it in pauseScreen and Options but we use same instance
-        menu = new Menu(this);
-        playGame = new PlayGame(this);
-        gameOptions = new GameOptions(this);
+        gamepadInput = new GamepadInput(gamePanel);  // Initialize once and share
+
+        audioOptions = new AudioOptions(this);  // this is created here, so we can use it in pauseScreen and Options but we use same instance
+        audioPlayer = new AudioPlayer();
+
+        menu = new Menu(this, gamepadInput);
+        playGame = new PlayGame(this, gamepadInput);
+        gameOptions = new GameOptions(this, gamepadInput);
+
+
     }
 
     private void startGameLoop() {
@@ -84,6 +96,7 @@ public class Game implements Runnable
 
             case QUIT:
             default:
+                cleanup();
                 System.exit(0);
                 break;
         }
@@ -160,14 +173,20 @@ public class Game implements Runnable
                 frames = 0;
                 updates = 0;
             }
-
         }
+
     }
     public void windowFocusLost() {
         if (GameState.state == GameState.PLAYGAME) {
             playGame.getPlayer().resetDirBooleans();
         }
 
+    }
+
+    public void cleanup() {
+        if (this.getPlayGame() != null && this.getPlayGame().gamepadInput != null) {
+            this.getPlayGame().gamepadInput.getControllers().quitSDLGamepad();
+        }
     }
 
     public Menu getMenu() {
@@ -186,5 +205,8 @@ public class Game implements Runnable
         return audioOptions;
     }
 
+    public AudioPlayer getAudioPlayer() {
+        return audioPlayer;
+    }
 
 }

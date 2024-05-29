@@ -31,8 +31,6 @@ public class EnemyManager {
         ghosts = level.getGhostz();
         // System.out.println("that many monsters in game: " + monsters.size());
 
-        // crabbies = level.getCrabs();
-        // System.out.println("that many crabs in game: " + crabbies.size());
     }
 
     public void update(int[][] levelData, Player player) {
@@ -97,12 +95,24 @@ public class EnemyManager {
     }
 
 
+
     public void checkIfEnemyWasHit(Rectangle2D.Float attackBox) {
         for (Monster monster : monsters) {
             if (monster.isAlive()) {
 
                 if (attackBox.intersects(monster.getHitbox())) {
+                    // System.out.println("aaaahhhhhh");
                     monster.receiveDamage(10);
+                    return;
+                }
+            }
+        }
+
+        for (Ghost ghost : ghosts) {
+            if (ghost.isAlive()) {
+
+                if (attackBox.intersects(ghost.getHitbox())) {
+                    ghost.receiveDamage(5);
                     return;
                 }
             }

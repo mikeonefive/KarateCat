@@ -1,7 +1,9 @@
 package ui;
 
+import com.studiohartman.jamepad.ControllerState;
 import gamestates.GameState;
 import gamestates.PlayGame;
+import inputs.GamepadInput;
 import main.Game;
 import utilz.LoadSave;
 import static utilz.Constants.UI.RSMButtons.*;
@@ -17,11 +19,18 @@ public class LevelCompleteOverlay {
     private BufferedImage image;
     private int bgX, bgY, bgWidth, bgHeight;
 
+    private GamepadInput gamepadInput;
+    // Cooldown for gamepad input to avoid choppy navigation
+    private long lastInputTime;
+    private final long inputCooldown = 200; // 200 milliseconds cooldown
 
-    public LevelCompleteOverlay(PlayGame playGame) {
+
+    public LevelCompleteOverlay(PlayGame playGame, GamepadInput gamepadInput) {
         this.playGame = playGame;
+        this.gamepadInput = gamepadInput;
         initImage();
         initButtons();
+        lastInputTime = System.currentTimeMillis(); // this is for the gamepad so it doesn't update the button state too fast
     }
 
     private void initButtons() {
@@ -33,6 +42,8 @@ public class LevelCompleteOverlay {
 
         next = new RsmButton(nextX, nextY, RSM_WIDTH, RSM_HEIGHT, 3);
         next.setName("Level complete Button");  // this is to scale them because there are 2 draw commands (1 for default, 1 for scaled)
+        next.setMouseOver(true); // default button highlighted
+
         menu = new RsmButton(menuX, menuY, RSM_WIDTH, RSM_HEIGHT, 2);
         menu.setName("Level complete Button");
     }
@@ -54,6 +65,8 @@ public class LevelCompleteOverlay {
     }
 
     public void update() {
+        handleGamepadInput();
+
         next.update();
         menu.update();
     }
@@ -80,11 +93,12 @@ public class LevelCompleteOverlay {
 
             if (menu.isMousePressed()) {
                 playGame.resetAll();
-                GameState.state = GameState.MENU;
+                playGame.setGameState(GameState.MENU);
             }
         } else if (isIn(next, e)) {
             if (next.isMousePressed()) {
                 playGame.loadNextLevel();
+                playGame.getGame().getAudioPlayer().setSongForLevel(playGame.getLevelManager().getLevelIndex());
             }
         }
 
@@ -98,6 +112,39 @@ public class LevelCompleteOverlay {
         } else if (isIn(next, e)) {
             next.setMousePressed(true);
         }
+    }
+
+    public void handleGamepadInput() {
+
+        ControllerState buttonPressed = gamepadInput.getButtonPressed();
+        long currentTime = System.currentTimeMillis();
+
+
+        if (currentTime - lastInputTime >= inputCooldown) {
+            if (buttonPressed.dpadDown && next.isMouseOver() || buttonPressed.dpadUp && next.isMouseOver()) {
+                menu.setMouseOver(true);
+                next.setMouseOver(false);
+                lastInputTime = currentTime;
+
+            } else if (buttonPressed.dpadDown && menu.isMouseOver() || buttonPressed.dpadUp && menu.isMouseOver()) {
+                next.setMouseOver(true);
+                menu.setMouseOver(false);
+                lastInputTime = currentTime;
+            }
+
+
+            if ((buttonPressed.a || buttonPressed.b) && next.isMouseOver()) {
+                playGame.loadNextLevel();
+                playGame.getGame().getAudioPlayer().setSongForLevel(playGame.getLevelManager().getLevelIndex());
+            }
+
+            else if ((buttonPressed.a || buttonPressed.b) && menu.isMouseOver()) {
+                playGame.resetAll();
+                playGame.setGameState(GameState.MENU);
+
+            }
+        }
+
     }
 
 }

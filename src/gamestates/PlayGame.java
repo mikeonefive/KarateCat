@@ -1,7 +1,9 @@
 package gamestates;
 
+import com.studiohartman.jamepad.ControllerState;
 import entities.EnemyManager;
 import entities.Player;
+import inputs.GamepadInput;
 import levels.LevelManager;
 import main.Game;
 import objects.ObjectManager;
@@ -47,9 +49,15 @@ public class PlayGame extends State implements StateMethods {     // in here we 
 
     private boolean isPlayerDying;
 
+    public GamepadInput gamepadInput;
+    private boolean isKeyboardLeft, isKeyboardRight;
+    private boolean isGamepadLeft, isGamepadRight;
 
-    public PlayGame(Game game) {
+
+    public PlayGame(Game game, GamepadInput gamepadInput) {
         super(game);
+        this.gamepadInput = gamepadInput;
+
         initClasses();
 
         backgroundImg = LoadSave.getSpriteAtlas(LoadSave.PLAYGAME_BACKGROUND);
@@ -91,11 +99,12 @@ public class PlayGame extends State implements StateMethods {     // in here we 
 
         player.setSpawnPosition(levelManager.getCurrentLevel().getPlayerSpawnCoordinates());
 
-        gameOverScreen = new GameOverScreen(this);
+        gameOverScreen = new GameOverScreen(this, gamepadInput);
 
-        pauseOverlay = new PauseOverlay(this);
+        pauseOverlay = new PauseOverlay(this, gamepadInput);
 
-        levelCompleteOverlay = new LevelCompleteOverlay(this);
+        levelCompleteOverlay = new LevelCompleteOverlay(this, gamepadInput);
+
     }
 
     @Override
@@ -119,7 +128,34 @@ public class PlayGame extends State implements StateMethods {     // in here we 
             player.update();
             enemyManager.update(levelManager.getCurrentLevel().getLvlData(), player);
             checkCloseToBorder();
+
+            handleInput();
+
+
         }
+
+    }
+
+    private void handleInput() {
+
+        // Combine keyboard and gamepad states because otherwise they interfere with each other
+        boolean isMovingLeft = isKeyboardLeft || isGamepadLeft;
+        boolean isMovingRight = isKeyboardRight || isGamepadRight;
+
+        player.setJump(false);
+        // Reset directional booleans before setting them
+        player.resetDirBooleans();
+
+        // Set player direction based on combined state
+        if (isMovingLeft) {
+            player.setLeft(true);
+        }
+        if (isMovingRight) {
+            player.setRight(true);
+        }
+
+        // Handle gamepad-specific input
+        handleGamepadInput();
     }
 
     private void checkCloseToBorder() {
@@ -189,6 +225,9 @@ public class PlayGame extends State implements StateMethods {     // in here we 
         player.resetAll();
         enemyManager.resetAllEnemies();
         objectManager.resetAllObjects();
+        // this is mainly so the death march (sound effect not a song) doesn't continue playing even though we've already started the level
+        game.getAudioPlayer().stopSoundEffects();
+
         
     }
 
@@ -216,11 +255,12 @@ public class PlayGame extends State implements StateMethods {     // in here we 
     @Override
     public void mouseClicked(MouseEvent e) {
 
-//        if (!isGameOver) {
-//            if (e.getButton() == MouseEvent.BUTTON1) {
-//                player.setAttacking(true, SPINKICK);
-//            }
-//        }
+        if (!isGameOver) {
+            if (e.getButton() == MouseEvent.BUTTON1) {
+                player.setAttacking(true, DOWNKICK);
+            } else if(e.getButton() == MouseEvent.BUTTON3)
+				    player.setPowerAttack();
+        }
 
     }
 
@@ -276,6 +316,8 @@ public class PlayGame extends State implements StateMethods {     // in here we 
 
     public void setLevelComplete(boolean isLevelComplete) {
         this.isLevelComplete = isLevelComplete;
+        if (isLevelComplete)
+            game.getAudioPlayer().playLevelCompleteSound();
     }
 
     public void setMaxLevelOffset(int levelOffset) {
@@ -291,10 +333,11 @@ public class PlayGame extends State implements StateMethods {     // in here we 
 
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_A:
-                    player.setLeft(true);
+                    isKeyboardLeft = true;
                     break;
                 case KeyEvent.VK_D:
-                    player.setRight(true);
+                    isKeyboardRight = true;
+                    // player.setRight(true);
                     break;
 
                 case KeyEvent.VK_K:
@@ -307,7 +350,7 @@ public class PlayGame extends State implements StateMethods {     // in here we 
                     player.setAttacking(true, ROUNDKICK);
                     break;
                 case KeyEvent.VK_O:
-                    player.setAttacking(true, SPINKICK);
+                    player.setAttacking(true, DOWNKICK);
                     break;
 
 
@@ -324,7 +367,6 @@ public class PlayGame extends State implements StateMethods {     // in here we 
                     break;
             }
         }
-
     }
 
     @Override
@@ -335,10 +377,12 @@ public class PlayGame extends State implements StateMethods {     // in here we 
             switch (e.getKeyCode()) {
 
                 case KeyEvent.VK_A:
-                    player.setLeft(false);
+                    isKeyboardLeft = false;
+                    // player.setLeft(false);
                     break;
                 case KeyEvent.VK_D:
-                    player.setRight(false);
+                    isKeyboardRight = false;
+                    // player.setRight(false);
                     break;
 
 
@@ -353,6 +397,49 @@ public class PlayGame extends State implements StateMethods {     // in here we 
 
         }
     }
+
+    @Override
+    public void handleGamepadInput() {
+
+        ControllerState button = gamepadInput.getButtonPressed();
+
+        // Reset gamepad direction booleans
+        isGamepadLeft = false;
+        isGamepadRight = false;
+
+        // buttons
+        if (button.b)
+            player.setAttacking(true, ROUNDKICK);
+        else if (button.y)
+            player.setAttacking(true, DOWNKICK);
+        else if (button.x)
+            player.setAttacking(true, PUNCH);
+        else if (button.a)
+            player.setAttacking(true, UPPERCUT);
+
+        else if (button.rightStickClick) {
+            player.setPowerAttack();
+        }
+
+
+        // jump
+        else if (button.rb)
+            player.setJump(true);
+
+        // directions
+        if (button.dpadRight || button.leftStickX > 0.5)
+            isGamepadRight = true;
+            // player.setRight(true);
+        if (button.dpadLeft || button.leftStickX < -0.5)
+            isGamepadLeft = true;
+            // player.setLeft(true);
+
+        // go to pause if start button was pressed
+        if (button.start)
+            isGamePaused = !isGamePaused;
+
+    }
+
 
     public void resumeGame() {
         isGamePaused = false;

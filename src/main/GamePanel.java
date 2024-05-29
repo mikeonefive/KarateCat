@@ -2,6 +2,7 @@
 
 package main;
 
+import inputs.GamepadInput;
 import inputs.KeyboardInput;
 import inputs.MouseInput;
 
@@ -18,6 +19,7 @@ public class GamePanel extends JPanel
 
     private MouseInput mouseInput;
 
+
     public GamePanel(Game game)
     {
         mouseInput = new MouseInput(this);
@@ -28,6 +30,8 @@ public class GamePanel extends JPanel
         addKeyListener(new KeyboardInput(this));
         addMouseListener(mouseInput);
         addMouseMotionListener(mouseInput);
+
+
     }
 
 
@@ -58,4 +62,5 @@ public class GamePanel extends JPanel
     public Game getGame() {
         return game;
     }
+
 }
