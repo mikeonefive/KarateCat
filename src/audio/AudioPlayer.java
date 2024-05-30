@@ -17,9 +17,11 @@ public class AudioPlayer {
     public static int UPPERCUT = 3;
     public static int ROUNDKICK = 4;
     public static int SPINKICK = 5;
+    public static int ADDPUNCH = 6;
+    public static int GOTHIT = 7;
 
-    public static int LEVEL_COMPLETE = 7;
-    public static int GAMEOVER = 8;
+    public static int LEVEL_COMPLETE = 8;
+    public static int GAMEOVER = 9;
 
     private Clip[] songs, sfx;
     private int currentSongID;
@@ -50,7 +52,7 @@ public class AudioPlayer {
 
     private void loadSoundEffects() {
 
-        String[] names = {"die", "jump", "punch", "addpunch", "uppercut", "roundkick", "spinkick", "levelcomplete", "gameover"};
+        String[] names = {"die", "jump", "punch", "addpunch", "uppercut", "roundkick", "spinkick", "hiss", "levelcomplete", "gameover"};
         sfx = new Clip[names.length];
 
         for (int i = 0; i < sfx.length; i++) {

@@ -180,10 +180,12 @@ public class Player extends Entity {
         if (checkedAttackAlready || animationIndex != 4) {
             return;
         }
+
         checkedAttackAlready = true;
 
-        if (powerAttackActive)
+        if (powerAttackActive) {
             checkedAttackAlready = false;
+        }
 
         playGame.checkIfEnemyHitByPlayer(attackBox);
         playGame.checkIfObjectHit(attackBox);
@@ -191,11 +193,14 @@ public class Player extends Entity {
         
     }
 
+    // !!!!
+    // power attack doesn't work properly only if we hit the enemy or object where we stop animation
+    // thought the problem was here because the intersects with enemy hitbox don't work during power attack
     private void updateAttackBox() {
 
-        if (right || powerAttackActive && flipW == 1) {          // Game.SCALE * 5 is the offset we need
+        if (right || (powerAttackActive && flipW == 1)) {          // Game.SCALE * 5 is the offset we need
             attackBox.x = hitbox.x + hitbox.width + (int)(Game.SCALE * 6);
-        } else if (left || powerAttackActive && flipW == -1) {
+        } else if (left || (powerAttackActive && flipW == -1)) {
             attackBox.x = hitbox.x - hitbox.width - (int)(Game.SCALE * 6);
         }
         attackBox.y = hitbox.y + Game.SCALE * 10;
@@ -226,7 +231,7 @@ public class Player extends Entity {
                 width * flipW, height, null);   // flipW is -1 when we go to the left so we would flip the image in this case
         // drawHitbox(graphics, levelOffset);
 
-        // drawAttackBox(graphics, levelOffset);
+        drawAttackBox(graphics, levelOffset);
 
         drawStatusBar(graphics);
     }
@@ -279,11 +284,10 @@ public class Player extends Entity {
 
         }
 
-        // !!!!
-        // power attack doesn't work properly only if we hit the enemy or object where we stop animation
+
         if (powerAttackActive) {
             setAttacking(true, POWERATTACK);
-            animationIndex = 0;
+            animationIndex = 1;
             animationTick = 0;
             return;
         }
@@ -439,6 +443,7 @@ public class Player extends Entity {
             hitbox.x += xSpeed;
         } else {
             hitbox.x = getEntityXPosNextToWall(hitbox, xSpeed);
+            // if we're in a powerattack and run into a wall we stop
             if (powerAttackActive) {
                 powerAttackActive = false;
                 powerAttackTick = 0;
@@ -563,6 +568,7 @@ public class Player extends Entity {
     }
 
     public void justGotHit() {
+            playGame.getGame().getAudioPlayer().playSoundEffect(AudioPlayer.GOTHIT);
             wasJustHit = true;
     }
 
