@@ -180,8 +180,8 @@ public class Player extends Entity {
         if (checkedAttackAlready || animationIndex != 4) {
             return;
         }
-
         checkedAttackAlready = true;
+
 
         if (powerAttackActive) {
             checkedAttackAlready = false;
@@ -203,7 +203,7 @@ public class Player extends Entity {
         } else if (left || (powerAttackActive && flipW == -1)) {
             attackBox.x = hitbox.x - hitbox.width - (int)(Game.SCALE * 6);
         }
-        attackBox.y = hitbox.y + Game.SCALE * 10;
+        attackBox.y = hitbox.y + (Game.SCALE * 10);
 
     }
 
@@ -538,6 +538,7 @@ public class Player extends Entity {
         isAttacking = false;
         isMoving = false;
         wasJustHit = false;
+        powerAttackActive = false;
         state = IDLE;
         currentHealth = maxHealth;
 

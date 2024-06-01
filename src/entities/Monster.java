@@ -11,6 +11,7 @@ import static utilz.Constants.EnemyConstants.*;
 public class Monster extends Enemy {
 
     private int attackBoxOffsetX;
+    private int hitBoxOffsetXLeft = 10;
 
     public Monster(float x, float y) {
 
@@ -98,7 +99,8 @@ public class Monster extends Enemy {
 
         if (walkDir == LEFT) {
             // - TILES_SIZE because monster was walking too far to the right (no solid tile)
-            return width - Game.TILES_SIZE;
+            // + hitboxOffsetXLeft because the hitbox wasn't in the right place when it walked to the left
+            return width - Game.TILES_SIZE + hitBoxOffsetXLeft;
         }
 
         return 0;

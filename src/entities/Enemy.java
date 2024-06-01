@@ -8,7 +8,6 @@ import static utilz.Constants.*;
 import static utilz.Constants.EnemyConstants.*;
 import static utilz.Constants.Directions.*;
 
-import static utilz.Constants.PlayerConstants.GETTINGHIT;
 
 import static utilz.HelpMethods.*;
 
