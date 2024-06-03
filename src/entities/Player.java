@@ -176,7 +176,6 @@ public class Player extends Entity {
 
     private void checkAttack() {
 
-
         if (checkedAttackAlready || animationIndex != 4) {
             return;
         }
@@ -196,6 +195,7 @@ public class Player extends Entity {
     // !!!!
     // power attack doesn't work properly only if we hit the enemy or object where we stop animation
     // thought the problem was here because the intersects with enemy hitbox don't work during power attack
+
     private void updateAttackBox() {
 
         if (right || (powerAttackActive && flipW == 1)) {          // Game.SCALE * 5 is the offset we need
