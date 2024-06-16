@@ -30,9 +30,9 @@ public class State {
             case MENU -> game.getAudioPlayer().playSong(AudioPlayer.MAIN_MENU);
             case PLAYGAME -> game.getAudioPlayer().setSongForLevel(game.getPlayGame().getLevelManager().getLevelIndex());
         }
-        System.out.println("Setting game state to: " + newState);
+        // System.out.println("Setting game state to: " + newState);
         GameState.state = newState;
-        System.out.println("Current game state after setting: " + GameState.state);
+        // System.out.println("Current game state after setting: " + GameState.state);
 
 
 

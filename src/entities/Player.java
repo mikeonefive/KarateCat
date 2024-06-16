@@ -101,6 +101,7 @@ public class Player extends Entity {
 
     private void initAttackBox() {
         attackBox = new Rectangle2D.Float(x, y, (int)(20 * Game.SCALE), (int)(20 * Game.SCALE));
+        resetAttackBox();
     }
 
     public void update() {
@@ -180,10 +181,12 @@ public class Player extends Entity {
         if (checkedAttackAlready || animationIndex != 4) {
             return;
         }
+
         checkedAttackAlready = true;
 
         if (powerAttackActive)
             checkedAttackAlready = false;
+
 
         playGame.checkIfEnemyHitByPlayer(attackBox);
         playGame.checkIfObjectHit(attackBox);
@@ -193,8 +196,15 @@ public class Player extends Entity {
 
     private void updateAttackBox() {
 
-        if (right || powerAttackActive && flipW == 1) {          // Game.SCALE * 5 is the offset we need
-            attackBox.x = hitbox.x + hitbox.width + (int)(Game.SCALE * 6);
+        if (right && left) {
+            if (flipW == 1) {
+                attackBox.x = hitbox.x + hitbox.width + (int)(Game.SCALE * 6);
+            } else {
+                attackBox.x = hitbox.x - hitbox.width - (int)(Game.SCALE * 6);
+            }
+        } else
+            if (right || powerAttackActive && flipW == 1) {          // Game.SCALE * 5 is the offset we need
+                attackBox.x = hitbox.x + hitbox.width + (int)(Game.SCALE * 6);
         } else if (left || powerAttackActive && flipW == -1) {
             attackBox.x = hitbox.x - hitbox.width - (int)(Game.SCALE * 6);
         }
@@ -226,7 +236,7 @@ public class Player extends Entity {
                 width * flipW, height, null);   // flipW is -1 when we go to the left so we would flip the image in this case
         // drawHitbox(graphics, levelOffset);
 
-        // drawAttackBox(graphics, levelOffset);
+        drawAttackBox(graphics, levelOffset);
 
         drawStatusBar(graphics);
     }
@@ -361,12 +371,12 @@ public class Player extends Entity {
 
         float xSpeed = 0;   // temp var to pass into canMoveHere method (the next position we wanna move to)
 
-        if (left) {
+        if (left && !right) {
             xSpeed -= walkSpeed;
             flipX = width;
             flipW = -1;
         }
-        if (right) {
+        if (right && !left) {
             xSpeed += walkSpeed;
             flipX = 0;
             flipW = 1;
@@ -374,7 +384,7 @@ public class Player extends Entity {
 
         // power attack active?
         if (powerAttackActive) {
-            if (!left && !right) {
+            if ((!left && !right) || (left && right)) {
                 if (flipW == -1)
                     xSpeed = -walkSpeed;
                 else
@@ -533,6 +543,7 @@ public class Player extends Entity {
         isAttacking = false;
         isMoving = false;
         wasJustHit = false;
+        airSpeed = 0f;
         state = IDLE;
         currentHealth = maxHealth;
 
@@ -540,8 +551,18 @@ public class Player extends Entity {
         hitbox.x = x;
         hitbox.y = y;
 
+        resetAttackBox();
+
         if (!isEntityOnFloor(hitbox, levelData)) {
             isInAir = true;
+        }
+    }
+
+    private void resetAttackBox() {
+        if (flipW == 1) {
+            attackBox.x = hitbox.x + hitbox.width + (int)(Game.SCALE * 6);
+        } else {
+            attackBox.x = hitbox.x - hitbox.width - (int)(Game.SCALE * 6);
         }
     }
 
