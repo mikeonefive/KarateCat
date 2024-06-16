@@ -86,6 +86,7 @@ public class Monster extends Enemy {
                         checkIfPlayerWasHit(attackBox, player);
                     }
                     break;
+
                 case WASHIT:
                     break;
             }

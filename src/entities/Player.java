@@ -584,7 +584,7 @@ public class Player extends Entity {
     }
 
     public void justGotHit() {
-            wasJustHit = true;
+        wasJustHit = true;
     }
 
 
