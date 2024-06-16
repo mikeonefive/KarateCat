@@ -73,9 +73,9 @@ public class PlayGame extends State implements StateMethods {     // in here we 
     }
 
     public void loadNextLevel() {
-        resetAll();
         levelManager.loadNextLevel();
         player.setSpawnPosition(levelManager.getCurrentLevel().getPlayerSpawnCoordinates());
+        resetAll();
     }
 
     private void loadStartLevel() {

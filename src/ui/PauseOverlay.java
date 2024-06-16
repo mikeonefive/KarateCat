@@ -115,6 +115,7 @@ public class PauseOverlay {
 
             // menu button pressed
             if ((buttonPressed.b || buttonPressed.a) && menuButton.isMouseOver()) {
+                    playGame.resetAll();
                     playGame.setGameState(GameState.MENU);
                     playGame.resumeGame();
                     lastInputTime = currentTime;
@@ -181,6 +182,7 @@ public class PauseOverlay {
 
         if (isIn(e, menuButton)) {
             if (menuButton.isMousePressed()) {
+                playGame.resetAll();
                 playGame.setGameState(GameState.MENU);
                 playGame.resumeGame();
             }

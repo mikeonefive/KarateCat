@@ -68,4 +68,8 @@ public abstract class Entity {      // you can't create an object of an abstract
         return animationIndex;
     }
 
+    public int getCurrentHealth() {
+        return currentHealth;
+    }
+
 }

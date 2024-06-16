@@ -98,7 +98,7 @@ public class EnemyManager {
 
     public void checkIfEnemyWasHit(Rectangle2D.Float attackBox) {
         for (Monster monster : monsters) {
-            if (monster.isAlive()) {
+            if (monster.isAlive() && monster.getCurrentHealth() > 0) {
 
                 if (attackBox.intersects(monster.getHitbox())) {
                     // System.out.println("aaaahhhhhh");
@@ -109,7 +109,7 @@ public class EnemyManager {
         }
 
         for (Ghost ghost : ghosts) {
-            if (ghost.isAlive()) {
+            if (ghost.isAlive() && ghost.getCurrentHealth() > 0) {
 
                 if (attackBox.intersects(ghost.getHitbox())) {
                     ghost.receiveDamage(5);
