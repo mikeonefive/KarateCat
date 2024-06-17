@@ -18,7 +18,7 @@ public class Player extends Entity {
 
     private BufferedImage[][] animations;
 
-    private boolean left, right, jump, wasJustHit;
+    private boolean left, right, jump;
     private boolean isMoving = false;
     private boolean isAttacking = false;
     private int attackType = -1; // Default value indicating no attack
@@ -583,9 +583,7 @@ public class Player extends Entity {
 
     }
 
-    public void justGotHit() {
-        wasJustHit = true;
-    }
+
 
 
 }

@@ -103,7 +103,7 @@ public class Constants {
                         case DEAD:
                             return 7;
                         case WASHIT:
-                            return 1;
+                            return 3;
                     }
 
                 case GHOST:
@@ -122,7 +122,7 @@ public class Constants {
         public static int getMaxHealth(int enemyType) {
             switch (enemyType) {
                 case MONSTER:
-                    return 20;
+                    return 40;
 
                 case GHOST:
                     return 100;

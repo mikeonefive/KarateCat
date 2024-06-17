@@ -6,6 +6,7 @@ import java.awt.geom.Rectangle2D;
 
 import static utilz.Constants.Directions.*;
 import static utilz.Constants.EnemyConstants.*;
+import static utilz.Constants.PlayerConstants.GETTINGHIT;
 
 
 public class Monster extends Enemy {
@@ -56,6 +57,11 @@ public class Monster extends Enemy {
             firstUpdateCheck(levelData);
         }
 
+        if (wasJustHit) {
+            state = GETTINGHIT;
+            wasJustHit = false;
+        }
+
         if (isInAir) {
             updateInAir(levelData);
         } else {
@@ -87,8 +93,6 @@ public class Monster extends Enemy {
                     }
                     break;
 
-                case WASHIT:
-                    break;
             }
         }
 
