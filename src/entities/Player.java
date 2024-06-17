@@ -236,7 +236,7 @@ public class Player extends Entity {
                 width * flipW, height, null);   // flipW is -1 when we go to the left so we would flip the image in this case
         // drawHitbox(graphics, levelOffset);
 
-        drawAttackBox(graphics, levelOffset);
+        // drawAttackBox(graphics, levelOffset);
 
         drawStatusBar(graphics);
     }
