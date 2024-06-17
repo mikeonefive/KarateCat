@@ -122,7 +122,7 @@ public class EnemyManager {
     private void loadEnemyImages() {
 
         // Monsters
-        monsterArray = new BufferedImage[4][7];
+        monsterArray = new BufferedImage[5][7];
         BufferedImage tempMonster = LoadSave.getSpriteAtlas(LoadSave.MONSTER_SPRITES);
 
         for (int y = 0; y < monsterArray.length; y++) {

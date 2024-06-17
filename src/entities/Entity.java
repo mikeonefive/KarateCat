@@ -1,7 +1,5 @@
 package entities;
 
-import main.Game;
-
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 
@@ -20,6 +18,7 @@ public abstract class Entity {      // you can't create an object of an abstract
 
     protected int maxHealth;
     protected int currentHealth;
+    protected boolean wasJustHit;
 
     // attackBox, area that the player attacks and if there's an enemy there it gets a can of whoopass (and vice versa)
     protected Rectangle2D.Float attackBox;
@@ -41,6 +40,10 @@ public abstract class Entity {      // you can't create an object of an abstract
         graphics.setColor(Color.red);
         graphics.drawRect((int)attackBox.x - levelOffsetX, (int)attackBox.y, (int)attackBox.width, (int)attackBox.height);
 
+    }
+
+    public void justGotHit() {
+        wasJustHit = true;
     }
 
     protected void initHitbox(int width, int height) {
