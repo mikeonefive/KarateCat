@@ -69,7 +69,7 @@ public class LoadSave {
 
     public static BufferedImage[] getAllLevels() {
         URL url = LoadSave.class.getResource("/levelfiles");
-        File file;
+        File file = null;
 
         // url = location, URI = actual resource the folder
         try {
@@ -93,6 +93,7 @@ public class LoadSave {
 
         // take the sorted files from above and put them in this array of images
         BufferedImage[] images = new BufferedImage[filesSorted.length];
+
         for (int i = 0; i < images.length; i++) {
             try {
                 images[i] = ImageIO.read(filesSorted[i]);
@@ -102,11 +103,6 @@ public class LoadSave {
         }
 
         return images;
-
-
     }
-
-
-
 
 }

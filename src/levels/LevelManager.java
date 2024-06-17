@@ -1,6 +1,5 @@
 package levels;
 
-import gamestates.GameState;
 import main.Game;
 import utilz.LoadSave;
 
@@ -10,27 +9,19 @@ import java.util.ArrayList;
 
 public class LevelManager {
 
-    private Game game;
+    private final Game game;
     private BufferedImage[] levelSprite;
-    private ArrayList<Level> levels;
+    private final ArrayList<Level> levels;
     private int levelIndex = 0;
 
     public LevelManager(Game game) {
         this.game = game;
-//        levelSprite = LoadSave.getSpriteAtlas(LoadSave.LEVEL_ATLAS);
         importOutsideSprites();
         levels = new ArrayList<>();
         buildAllLevels();
     }
 
     public void loadNextLevel() {
-        levelIndex ++;
-        if (levelIndex >= levels.size()) {
-            levelIndex = 0;
-            System.out.println("No more levels. You beat the game!");
-            GameState.state = GameState.MENU;
-        }
-
         Level newLevel = levels.get(levelIndex);
         game.getPlayGame().getEnemyManager().loadEnemies(newLevel);
         game.getPlayGame().getPlayer().loadLevelData(newLevel.getLvlData());
@@ -89,5 +80,9 @@ public class LevelManager {
 
     public int getAmountOfLevels() {
         return levels.size();
+    }
+
+    public void setLevelIndex(int levelIndex) {
+        this.levelIndex = levelIndex;
     }
 }

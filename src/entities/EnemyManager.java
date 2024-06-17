@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 public class EnemyManager {
 
-    private PlayGame playGame;
+    private final PlayGame playGame;
 
     private BufferedImage[][] monsterArray;
     private ArrayList<Monster> monsters = new ArrayList<>();

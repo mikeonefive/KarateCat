@@ -1,19 +1,9 @@
 package utilz;
 
-import entities.Ghost;
-import entities.Monster;
 import main.Game;
 import objects.*;
-
-import java.awt.*;
 import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 
-import static utilz.Constants.EnemyConstants.GHOST;
-import static utilz.Constants.EnemyConstants.MONSTER;
-
-import static utilz.Constants.ObjectConstants.*;
 
 public class HelpMethods {
 
@@ -59,10 +49,10 @@ public class HelpMethods {
         int value = levelData[yTile][xTile];
 
         // 48 and up is not a tile, also less than 0 ain't a tile and 11 is a transparent sprite, so not 11 means solid
-        if (value >= 48 || value < 0 || value != 11) {
+        // if (value >= 48 || value < 0 || value != 11)
+        if (value != 11) {
             return true;
         }
-
         return false;
 
     }
@@ -174,143 +164,6 @@ public class HelpMethods {
         } else {
             return areAllCurrentTilesWalkable(xTileObject1, xTileObject2, yTileCurrent, levelData);
         }
-    }
-
-    public static int[][] getLevelData(BufferedImage image) {
-
-        int[][] levelData = new int[image.getHeight()][image.getWidth()];
-
-        for (int y = 0; y < image.getHeight(); y++) {
-            for (int x = 0; x < image.getWidth(); x++) {
-
-                Color color = new Color(image.getRGB(x, y));
-                int value = color.getRed();     // get red value on that position
-                if (value >= 48) {
-                    value = 0;
-                }
-                levelData[y][x] = value;
-            }
-        }
-        return levelData;
-    }
-
-    public static ArrayList<Monster> getMonsters(BufferedImage img) {
-
-        ArrayList<Monster> monsterList = new ArrayList<>();
-
-        for (int y = 0; y < img.getHeight(); y++) {
-            for (int x = 0; x < img.getWidth(); x++) {
-
-                Color color = new Color(img.getRGB(x, y));
-                int value = color.getGreen();     // get green value on that position, if it's 0 meaning MONSTER then we add a new one to the list
-                if (value == MONSTER) {
-                    monsterList.add(new Monster(x * Game.TILES_SIZE, y * Game.TILES_SIZE));
-                }
-
-            }
-        }
-        return monsterList;
-    }
-
-    public static ArrayList<Ghost> getGhosts(BufferedImage img) {
-
-        ArrayList<Ghost> ghostList = new ArrayList<>();
-
-        for (int y = 0; y < img.getHeight(); y++) {
-            for (int x = 0; x < img.getWidth(); x++) {
-
-                Color color = new Color(img.getRGB(x, y));
-                int value = color.getGreen();     // get green value on that position, if it's 1 meaning GHOST then we add a new one to the list
-                if (value == GHOST) {
-                    ghostList.add(new Ghost(x * Game.TILES_SIZE, y * Game.TILES_SIZE));
-                }
-
-            }
-        }
-        return ghostList;
-    }
-
-
-
-
-    public static Point getPlayerSpawnPosition(BufferedImage img) {
-        for (int y = 0; y < img.getHeight(); y++)
-            for (int x = 0; x < img.getWidth(); x++) {
-                Color color = new Color(img.getRGB(x, y));
-                int value = color.getGreen();
-                if (value == 100)
-                    return new Point(x * Game.TILES_SIZE, y * Game.TILES_SIZE);
-            }
-
-        return new Point(Game.TILES_SIZE, Game.TILES_SIZE);
-    }
-
-    public static ArrayList<Potion> getPotions(BufferedImage img) {
-
-        ArrayList<Potion> potionsList = new ArrayList<>();
-
-        for (int y = 0; y < img.getHeight(); y++) {
-            for (int x = 0; x < img.getWidth(); x++) {
-
-                Color color = new Color(img.getRGB(x, y));
-                int value = color.getBlue();     // get blue value on that position
-                if (value == RED_POTION || value == BLUE_POTION) {
-                    potionsList.add(new Potion(x * Game.TILES_SIZE, y * Game.TILES_SIZE, value));
-                }
-            }
-        }
-        return potionsList;
-    }
-
-    public static ArrayList<GameContainer> getContainers(BufferedImage img) {
-
-        ArrayList<GameContainer> containersList = new ArrayList<>();
-
-        for (int y = 0; y < img.getHeight(); y++) {
-            for (int x = 0; x < img.getWidth(); x++) {
-
-                Color color = new Color(img.getRGB(x, y));
-                int value = color.getBlue();     // get blue value on that position
-                if (value == BOX || value == BARREL) {
-                    containersList.add(new GameContainer(x * Game.TILES_SIZE, y * Game.TILES_SIZE, value));
-                }
-            }
-        }
-        return containersList;
-    }
-
-    public static ArrayList<Spike> getSpikes(BufferedImage image) {
-        ArrayList<Spike> spikesList = new ArrayList<>();
-
-        for (int y = 0; y < image.getHeight(); y++) {
-            for (int x = 0; x < image.getWidth(); x++) {
-
-                Color color = new Color(image.getRGB(x, y));
-                int value = color.getBlue();     // get blue value on that position
-                if (value == SPIKE) {
-                    spikesList.add(new Spike(x * Game.TILES_SIZE, y * Game.TILES_SIZE, SPIKE));
-                }
-            }
-        }
-        return spikesList;
-
-    }
-
-    public static ArrayList<Cannon> getCannons(BufferedImage image) {
-        ArrayList<Cannon> list = new ArrayList<>();
-
-        for (int y = 0; y < image.getHeight(); y++) {
-            for (int x = 0; x < image.getWidth(); x++) {
-
-                Color color = new Color(image.getRGB(x, y));
-                int value = color.getBlue();     // get blue value on that position
-                if (value == CANNON_LEFT || value == CANNON_RIGHT) {
-                    list.add(new Cannon(x * Game.TILES_SIZE, y * Game.TILES_SIZE, value));
-                }
-            }
-        }
-        return list;
-
     }
 
 }
