@@ -103,7 +103,7 @@ public class Constants {
                         case DEAD:
                             return 7;
                         case WASHIT:
-                            return 3;
+                            return 1;
                     }
 
                 case GHOST:
@@ -112,6 +112,8 @@ public class Constants {
                         case ATTACK:
                         case WALK:
                             return 6;
+                        case WASHIT:
+                            return 1;
                     }
 
             }
